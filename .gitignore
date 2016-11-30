@@ -1,0 +1,15 @@
+# Java class files
+*.class
+
+# generated files
+gen/
+bin/
+generated/
+
+# Windows thumbnail db
+Thumbs.db
+
+# IDEA
+*.iml
+.idea
+target/

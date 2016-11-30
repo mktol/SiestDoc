@@ -1,0 +1,58 @@
+package com.repo.one.service;
+
+import com.repo.one.model.Document;
+import com.repo.one.repository.DummyDocumentRepo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+/**
+ *
+ */
+@Service
+public class DocumentServiceImpl implements DocumentService {
+    @Autowired
+    private DummyDocumentRepo documentRepo;
+
+    @Override
+    public List<Document> getAll() {
+
+        return documentRepo.allDocuments();
+    }
+
+    @Override
+    public Document getDocument(Long id) {
+        return null;
+    }
+
+    @Override
+    public Document getDocument(String name) {
+        return documentRepo.getByName(name).get(); //TODO rewrite it to correct code
+
+    }
+
+    @Override
+    public Document setDocument(Document document) {
+        return documentRepo.create(document);
+    }
+
+    @Override
+    public Document update(Document document) {
+
+        return documentRepo.update(document);
+    }
+
+    @Override
+    public boolean remove(Document document) {
+        return documentRepo.remove(document);
+
+    }
+
+    @Override
+    public Document saveDocument(Long position, Document document) {
+        document.setId(position);
+        documentRepo.saveUpdatePosition(position, document);
+        return document;
+    }
+}
