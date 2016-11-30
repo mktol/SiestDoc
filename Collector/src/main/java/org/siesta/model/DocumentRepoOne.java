@@ -1,4 +1,4 @@
-package org.siesta.service;
+package org.siesta.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * This class
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Document {
+public class DocumentRepoOne {
 
     private Long id;
     private String name;
@@ -14,10 +14,10 @@ public class Document {
     private String content;
     private String metadata;
 
-    public Document() {
+    public DocumentRepoOne() {
     }
 
-    public Document(Long id, String name, String title, String content) {
+    public DocumentRepoOne(Long id, String name, String title, String content) {
         this.id = id;
         this.name = name;
         this.title = title;
@@ -66,7 +66,7 @@ public class Document {
 
     @Override
     public String toString() {
-        return "Document{" +
+        return "DocumentRepoOne{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", title='" + title + '\'' +
