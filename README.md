@@ -27,7 +27,9 @@ Collector is REST services that provides API for end user to perform CRUD operat
 				
 Requirements
 1.	Application should be RESTfull
+
 2.	Application should expose next REST endpoints to:
+
     - get all documents (from all the repositories)
     - get document by id
     - add document
