@@ -4,6 +4,7 @@ import org.apache.tomcat.util.codec.binary.Base64;
 import org.siesta.model.DocumentRepoOne;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
@@ -15,17 +16,18 @@ import static org.springframework.http.HttpMethod.GET;
 /**
  * This class
  */
-public class OneRepoConector {
+@Component
+public class OneRepoConnector {
     public static final String REST_SERVICE_URI = "http://localhost:8080/rest";
 
 
     private  String name; //TODO should be encrypted and stored to special file or db
     private  String password;
 
-    public OneRepoConector() {
+    public OneRepoConnector() {
     }
 
-    public OneRepoConector(String name, String password) {
+    public OneRepoConnector(String name, String password) {
         this.name = name;
         this.password = password;
     }
@@ -48,24 +50,35 @@ public class OneRepoConector {
             });
             List<DocumentRepoOne> docs = response.getBody();
             docs.forEach(System.out::println);
-        }catch (ResourceAccessException connecException){
+        }catch (ResourceAccessException connectException){
+            System.out.println(connectException.getMessage());
             return false;
         }
         return true;
 
     }
 
+    RestTemplate restTemplate = new RestTemplate();
+    HttpEntity<String> httpRequest(){
+        return new HttpEntity<>(getHeaders());
+    }
+
+    public <T>T connect(String url, HttpMethod httpMethod ,ParameterizedTypeReference<T> parameterizedType){
+        ResponseEntity<T> response = restTemplate.exchange(url, httpMethod, httpRequest(), parameterizedType);
+        return response.getBody();
+    }
+
+/*
 
 
     public static void main(String[] args) {
-        OneRepoConector connct = new OneRepoConector("admin", "admin");
+        OneRepoConnector connct = new OneRepoConnector("admin", "admin");
 
-        if(connct.connect()){
-            System.out.println("good");
-        }else{
-            System.out.println("connection exception");
-        }
+        connct.connect(REST_SERVICE_URI + "/documents/", HttpMethod.GET, new ParameterizedTypeReference<List<DocumentRepoOne>>(){}).forEach(System.out::println);
+        DocumentRepoOne  doc= connct.connect(REST_SERVICE_URI + "/documents/name9", HttpMethod.GET, new ParameterizedTypeReference<DocumentRepoOne>(){});
+        System.out.println("======"+doc+"=======");
 
     }
+*/
 
 }

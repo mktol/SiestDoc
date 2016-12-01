@@ -20,7 +20,7 @@ public class DocumentController {
         return documentService.getAll();
     }
 
-    @RequestMapping("/{name}") // TODO not restfulll
+    @RequestMapping("/rest/documents/{name}") // TODO not restfulll
     public Document document(@PathVariable("name")String name){
         return documentService.getDocument(name);
     }
