@@ -16,4 +16,5 @@ public interface RepositoryService {
     boolean update(Document document);
     Document delete(Document document);
 
+    Document getDocumentByName(String name);
 }

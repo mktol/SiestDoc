@@ -19,19 +19,27 @@ public class OneDocumentService implements RepositoryService {
     @Autowired
     private OneRepoConnector connector ;
 
+    @Autowired
+    private CachedDocumentService documentService;
+
     @Override
     public List<Document> getAllDocuments() {
         List<DocumentRepoOne> documentRepoOnes = connector.connect(OneRepoConnector.REST_SERVICE_URI + "/documents/", HttpMethod.GET, new ParameterizedTypeReference<List<DocumentRepoOne>>(){});
-        return ConverterUtil.convertToDocumetnList(documentRepoOnes);
+        List<Document> resultList = ConverterUtil.convertToDocumetnList(documentRepoOnes);
+        documentService.saveDocument(resultList);
+        return resultList;
     }
 
     @Override
     public Optional<Document> getDocument(Long id) {
-        return null;
+        Optional<Document> doc = Optional.of(documentService.getDoc(id));
+        return doc;
     }
 
     @Override
     public boolean addDocument(Document document) {
+        documentService.seveUpdateDoc(document);
+        // Repo manager save doc in one of repository
         return false;
     }
 
@@ -43,5 +51,12 @@ public class OneDocumentService implements RepositoryService {
     @Override
     public Document delete(Document document) {
         return null;
+    }
+
+    @Override
+    public Document getDocumentByName(String name) {
+        return connector.connect(OneRepoConnector.REST_SERVICE_URI + "/documents/"+name+"/", HttpMethod.GET, new ParameterizedTypeReference<Document>() {
+
+        });
     }
 }
