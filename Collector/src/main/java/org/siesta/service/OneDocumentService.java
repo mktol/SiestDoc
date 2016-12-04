@@ -7,6 +7,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,7 +39,7 @@ public class OneDocumentService implements RepositoryService {
 
     @Override
     public boolean addDocument(Document document) {
-        documentService.seveUpdateDoc(document);
+        documentService.saveUpdateDoc(document);
         // Repo manager save doc in one of repository
         return false;
     }
@@ -48,9 +49,17 @@ public class OneDocumentService implements RepositoryService {
         return false;
     }
 
+
+
     @Override
-    public Document delete(Document document) {
-        return null;
+    public boolean delete(String docId) {
+        Boolean res = connector.connect(OneRepoConnector.REST_SERVICE_URI + "/documents/" + docId , HttpMethod.DELETE, new ParameterizedTypeReference<Boolean>() {
+
+        });
+
+        // boolean resp = restTemplate.exchange(REST_SERVICE_URI+"/documents/"+docId2, HttpMethod.DELETE, request, new ParameterizedTypeReference<Boolean>(){}).getBody();
+
+        return res;
     }
 
     @Override
@@ -58,5 +67,13 @@ public class OneDocumentService implements RepositoryService {
         return connector.connect(OneRepoConnector.REST_SERVICE_URI + "/documents/"+name+"/", HttpMethod.GET, new ParameterizedTypeReference<Document>() {
 
         });
+    }
+
+    @Override
+    public List<Document> getDocByDocId(String docId) {
+        List<DocumentRepoOne> res = connector.connect(OneRepoConnector.REST_SERVICE_URI + "/documents?docId=" + docId , HttpMethod.GET, new ParameterizedTypeReference<List<DocumentRepoOne>>() {
+
+        });
+        return  ConverterUtil.convertToDocumetnList(res);
     }
 }

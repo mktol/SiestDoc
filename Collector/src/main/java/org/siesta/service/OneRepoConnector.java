@@ -1,10 +1,12 @@
 package org.siesta.service;
 
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.siesta.model.Document;
 import org.siesta.model.DocumentRepoOne;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpMessageConverterExtractor;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
@@ -65,6 +67,13 @@ public class OneRepoConnector {
 
     public <T>T connect(String url, HttpMethod httpMethod ,ParameterizedTypeReference<T> parameterizedType){
         ResponseEntity<T> response = restTemplate.exchange(url, httpMethod, httpRequest(), parameterizedType);
+        return response.getBody();
+    }
+
+    public <T>T connect(String url, HttpMethod httpMethod , String jsonObject, ParameterizedTypeReference<T> parameterizedType){
+        HttpHeaders headers = getHeaders();
+        HttpEntity<String> httpEntity = new HttpEntity<>(jsonObject, headers);
+        ResponseEntity<T> response = restTemplate.exchange(url, httpMethod, httpEntity, parameterizedType);
         return response.getBody();
     }
 

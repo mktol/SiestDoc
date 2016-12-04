@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  *
@@ -21,10 +22,7 @@ public class DocumentServiceImpl implements DocumentService {
         return documentRepo.allDocuments();
     }
 
-    @Override
-    public Document getDocument(Long id) {
-        return null;
-    }
+
 
     @Override
     public Document getDocument(String name) {
@@ -46,13 +44,26 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     public boolean remove(Document document) {
         return documentRepo.remove(document);
-
     }
 
     @Override
-    public Document saveDocument(Long position, Document document) {
-        document.setId(position);
-        documentRepo.saveUpdatePosition(position, document);
+    public boolean remove(String documentId) {
+        return documentRepo.remove(documentId);
+
+    }
+
+
+    @Override
+    public Document saveDocument(String documentId, Document document) {
+        document.setId(documentId);
+        documentRepo.saveUpdateByDocumentId(documentId, document);
         return document;
+    }
+
+    @Override
+    public Document getDocumentByID(String documentId) {
+        Optional<Document> doc = documentRepo.getById(documentId);
+
+        return doc.orElseThrow(()->new IllegalArgumentException("wrong id or id does not exist"));
     }
 }

@@ -17,9 +17,10 @@ public class ConverterUtil {
             document.setName(doc.getName());
             document.setContent(doc.getContent());
             document.setTitle(doc.getTitle());
+            document.setDocId(doc.getId());
             return document;
         }
-        throw new IllegalArgumentException("Input parameter cant be null"+ doc);
+        throw new IllegalArgumentException("Input parameter cant be null. "+ doc);
     }
 
     public static DocumentRepoOne convertToRepoOneDocument(Document document){
@@ -28,6 +29,7 @@ public class ConverterUtil {
             documentRepoOne.setTitle(document.getTitle());
             documentRepoOne.setContent(document.getContent());
             documentRepoOne.setName(document.getName());
+            documentRepoOne.setId(document.getDocId());
             return documentRepoOne;
         }
         throw new IllegalArgumentException("Input parameter cant be null "+ document);

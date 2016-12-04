@@ -14,7 +14,9 @@ public interface RepositoryService {
     Optional<Document> getDocument(Long id);
     boolean addDocument(Document document);
     boolean update(Document document);
-    Document delete(Document document);
+
+    boolean delete(String docId);
 
     Document getDocumentByName(String name);
+    List<Document> getDocByDocId(String docId);
 }

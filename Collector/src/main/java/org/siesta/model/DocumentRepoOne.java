@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DocumentRepoOne {
 
-    private Long id;
+    private String id;
     private String name;
     private String title;
     private String content;
@@ -17,18 +17,18 @@ public class DocumentRepoOne {
     public DocumentRepoOne() {
     }
 
-    public DocumentRepoOne(Long id, String name, String title, String content) {
+    public DocumentRepoOne(String id, String name, String title, String content) {
         this.id = id;
         this.name = name;
         this.title = title;
         this.content = content;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

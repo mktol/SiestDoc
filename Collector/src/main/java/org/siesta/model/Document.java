@@ -14,6 +14,7 @@ public class Document {
     @Id
     @GeneratedValue
     private Long id;
+    private String docId;
     private String name;
     private String title;
 
@@ -21,6 +22,8 @@ public class Document {
     @JoinTable(name="DOC_INDEXES")
     private Set<Index> indexes = new HashSet<>();
 
+    @Lob
+    @Column
     private String content;
     @OneToMany(mappedBy = "document")
     private List<Comment> comments;
@@ -73,4 +76,11 @@ public class Document {
         this.comments = comments;
     }
 
+    public String getDocId() {
+        return docId;
+    }
+
+    public void setDocId(String docId) {
+        this.docId = docId;
+    }
 }

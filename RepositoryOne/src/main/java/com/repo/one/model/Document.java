@@ -7,7 +7,7 @@ import java.util.List;
  */
 public class Document {
 
-    private Long id;
+    private String id;
     private String name;
     private String title;
     private String content;
@@ -16,18 +16,18 @@ public class Document {
     public Document() {
     }
 
-    public Document(Long id, String name, String title, String content) {
+    public Document(String id, String name, String title, String content) {
         this.id = id;
         this.name = name;
         this.title = title;
         this.content = content;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

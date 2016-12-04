@@ -16,7 +16,7 @@ public class CachedDocumentService {
     @Autowired
     private DocumentRepository documentRepository;
 
-    public Document seveUpdateDoc(Document document){
+    public Document saveUpdateDoc(Document document){
         return documentRepository.save(document); // data jpa delegate it to persist or merge behind scene
     }
 

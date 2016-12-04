@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -35,8 +36,7 @@ public class DummyDocumentRepo { // TODO CRUD must be rewritten !!!
         for (int i = 0; i < 20; i++) {
             String title = RandomStringUtils.random(length, useLetters, useNumbers);
             String content = RandomStringUtils.random(length*50, useLetters, useNumbers);
-            docs.add(new Document(counter.incrementAndGet(), name+counter.get(), title, content));
-//            docs.add(new Document((long)i, name+counter.get(), title, content));
+            docs.add(new Document(UUID.randomUUID().toString(), name+counter.incrementAndGet(), title, content));
         }
         return docs;
     }
@@ -51,7 +51,7 @@ public class DummyDocumentRepo { // TODO CRUD must be rewritten !!!
 
     public Document create(Document document){
         if(document!=null){
-            document.setId(counter.incrementAndGet());
+            document.setId(UUID.randomUUID().toString());
             documents.add(document);
             return document;
         }else{
@@ -64,28 +64,32 @@ public class DummyDocumentRepo { // TODO CRUD must be rewritten !!!
 
     }
 
-    public void remove(Long id){
-        documents.removeIf(document -> document.getId().equals(id));
+    public boolean remove(String id){
+        return documents.removeIf(document -> document.getId().equals(id));
     }
 
     public Document update(Document document){ // TODO WRONG LOGIC
         Optional<Document> doc = documents.stream().filter(d->d.getId().equals(document.getId())).findFirst();
         Document upd = doc.orElseThrow(()->new IllegalArgumentException("Document is not present in storage.Id= "+document.getId()));
-        upd = document;
+
         return document;
     }
 
-    public void saveUpdatePosition(Long position, Document document) {
-        if(position<=0 || document==null){
-            throw new  IllegalArgumentException("wrong data: position = "+position+", document = "+document);
+    public void saveUpdateByDocumentId(String documentId, Document document) {
+        if(document==null){
+            throw new  IllegalArgumentException("wrong data: docId = "+documentId+", document = "+document);
         }
         for (int i = 0; i < documents.size(); i++) {
-            if (documents.get(i).getId().equals(position)){
+            if (documents.get(i).getId().equals(documentId)){
                 documents.add(i, document);
             }else{
                 documents.add(document);
             }
         }
 
+    }
+
+    public Optional<Document> getById(String docId) {
+        return documents.stream().filter(document -> document.getId().equals(docId)).findAny();
     }
 }
