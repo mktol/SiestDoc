@@ -68,7 +68,7 @@ public class SpringRestClient {
         String doc = mapper.writeValueAsString(document);
         System.out.println("Lets update document.");
         RestTemplate restTemplate = new RestTemplate();
-        HttpEntity<String> request = new HttpEntity<>( doc , getHeaders());
+        HttpEntity<Document> request = new HttpEntity<>( document , getHeaders());
 //        restTemplate.postForEntity(REST_SERVICE_URI+"/documents", document, Document.class);
         Document document1= restTemplate.exchange(REST_SERVICE_URI+"/documents", HttpMethod.POST, request, new ParameterizedTypeReference<Document>(){}).getBody();
 
