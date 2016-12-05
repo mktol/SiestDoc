@@ -1,11 +1,9 @@
 package org.siesta;
 
-import org.siesta.service.OneRepoConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 
 
 @SpringBootApplication
@@ -27,8 +25,8 @@ public class Application {
 //        };
 //    }
 
-    @Bean
+/*    @Bean
     public OneRepoConnector oneRepoConnector(){
         return new OneRepoConnector("admin", "admin");
-    }
+    }*/
 }

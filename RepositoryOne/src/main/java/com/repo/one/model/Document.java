@@ -1,7 +1,5 @@
 package com.repo.one.model;
 
-import java.util.List;
-
 /**
  * This class
  */
@@ -17,11 +15,16 @@ public class Document {
     }
 
     public Document(String id, String name, String title, String content) {
+        this(name, title, content);
         this.id = id;
+    }
+
+    public Document(String name, String title, String content) {
         this.name = name;
         this.title = title;
         this.content = content;
     }
+
 
     public String getId() {
         return id;
@@ -61,5 +64,16 @@ public class Document {
 
     public void setMetadata(String metadata) {
         this.metadata = metadata;
+    }
+
+    @Override
+    public String toString() {
+        return "Document{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                ", metadata='" + metadata + '\'' +
+                '}';
     }
 }

@@ -10,7 +10,7 @@ import java.util.Optional;
  */
 public interface RepositoryService {
 
-    List<Document> getAllDocuments();
+    List<Document> getAllDocuments() throws InterruptedException;
     Optional<Document> getDocument(Long id);
     boolean addDocument(Document document);
     boolean update(Document document);

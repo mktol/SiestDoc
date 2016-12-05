@@ -3,13 +3,10 @@ package com.repo.one.controller;
 import com.repo.one.model.Document;
 import com.repo.one.service.DocumentService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 
 @RestController()
 public class  DocumentController {
@@ -34,17 +31,18 @@ public class  DocumentController {
 
     /**
      * Save document in with concrete id
-     * @param documentid
+     * @param documentId
      * @param document
      * @return
      */
     @RequestMapping(value = "/rest/documents/{id}", method = RequestMethod.PUT)
-    public Document saveConcreateDocument(@PathVariable("id") String documentid,@RequestBody() Document document){
-        return documentService.saveDocument(documentid, document);
+    public Document saveConcreateDocument(@PathVariable("id") String documentId,@RequestBody() Document document){
+        return documentService.saveDocument(documentId, document);
     }
 
-    @RequestMapping(method = RequestMethod.POST, consumes = {"application/json"})
-    public Document saveDocument(@RequestBody() Document document){
+    @RequestMapping(value = "/rest/documents", method = RequestMethod.POST /*, consumes = {"application/json"}*/)
+    public Document saveDocument(@RequestBody(required = false) Document document  ){
+        System.out.println("so so os ososo os oso so os oso soso so os oso");
         return documentService.setDocument(document);
     }
 
@@ -57,7 +55,7 @@ public class  DocumentController {
     public boolean updateDocument(@RequestBody() Document document){
         if(document!=null){
             documentService.update(document);
-            return true; // TODO rewritte this method. Handle exeption or ...
+            return true; // TODO rewrite this method. Handle exception or ...
         }
         return false;
     }

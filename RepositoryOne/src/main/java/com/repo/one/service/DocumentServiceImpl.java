@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  *
@@ -32,12 +33,14 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public Document setDocument(Document document) {
+        if(document.getId()==null){
+            document.setId(UUID.randomUUID().toString());
+        }
         return documentRepo.create(document);
     }
 
     @Override
     public Document update(Document document) {
-
         return documentRepo.update(document);
     }
 

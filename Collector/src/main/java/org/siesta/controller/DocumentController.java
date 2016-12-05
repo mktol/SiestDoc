@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -23,7 +22,11 @@ public class DocumentController {
     @RequestMapping(value = "/documents",  method = RequestMethod.GET)
     public @ResponseBody List<Document> getAllDocuments(@RequestParam(value = "docId", required = false)String docId){
         if(docId==null) {
-            return documentService.getAllDocuments();
+            try {
+                return documentService.getAllDocuments();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
         return documentService.getDocByDocId(docId);
     }

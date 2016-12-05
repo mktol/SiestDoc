@@ -2,13 +2,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.repo.one.model.Document;
 import org.apache.tomcat.util.codec.binary.Base64;
-import org.apache.tomcat.util.log.SystemLogHandler;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -61,9 +62,30 @@ public class SpringRestClient {
         System.out.println(resp);
     }
 
+    private static void addDocument() throws JsonProcessingException {
+        Document document = new Document( "custom NAME", "my title", "TEST CONTENT");
+        ObjectMapper mapper = new ObjectMapper();
+        String doc = mapper.writeValueAsString(document);
+        System.out.println("Lets update document.");
+        RestTemplate restTemplate = new RestTemplate();
+        HttpEntity<String> request = new HttpEntity<>( doc , getHeaders());
+//        restTemplate.postForEntity(REST_SERVICE_URI+"/documents", document, Document.class);
+        Document document1= restTemplate.exchange(REST_SERVICE_URI+"/documents", HttpMethod.POST, request, new ParameterizedTypeReference<Document>(){}).getBody();
+
+
+    }
+
+/*    public <T>T connect(String url, HttpMethod httpMethod , String jsonObject, ParameterizedTypeReference<T> parameterizedType){
+        HttpHeaders headers = getHeaders();
+        HttpEntity<String> httpEntity = new HttpEntity<>(jsonObject, headers);
+        ResponseEntity<T> response = restTemplate.exchange(url, httpMethod, httpEntity, parameterizedType);
+        return response.getBody();
+    }*/
+
     public static void main(String[] args) throws JsonProcessingException {
         listAllDoc();
         updateDocument();
         deleteDocument();
+        addDocument();
     }
 }

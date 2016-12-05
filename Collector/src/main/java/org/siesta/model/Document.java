@@ -3,7 +3,6 @@ package org.siesta.model;
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -27,6 +26,14 @@ public class Document {
     private String content;
     @OneToMany(mappedBy = "document")
     private List<Comment> comments;
+
+    @ManyToOne
+    private RepoCred repository;
+
+
+    public void addRepository(RepoCred repoCred) {
+        this.repository = repoCred;
+    }
 
     public Long getId() {
         return id;
@@ -82,5 +89,15 @@ public class Document {
 
     public void setDocId(String docId) {
         this.docId = docId;
+    }
+
+
+
+    public RepoCred getRepository() {
+        return repository;
+    }
+
+    public void setRepository(RepoCred repository) {
+        this.repository = repository;
     }
 }

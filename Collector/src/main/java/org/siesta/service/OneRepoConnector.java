@@ -1,12 +1,10 @@
 package org.siesta.service;
 
 import org.apache.tomcat.util.codec.binary.Base64;
-import org.siesta.model.Document;
 import org.siesta.model.DocumentRepoOne;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpMessageConverterExtractor;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
@@ -19,19 +17,29 @@ import static org.springframework.http.HttpMethod.GET;
  * This class
  */
 @Component
-public class OneRepoConnector {
+public class OneRepoConnector implements RepoConnector{
+//    public final String REST_SERVICE_URI ;
     public static final String REST_SERVICE_URI = "http://localhost:8080/rest";
-
-
+    public String restServiceUrl;
+    RestTemplate restTemplate = new RestTemplate();
+    private String repoName = "defoult";
     private  String name; //TODO should be encrypted and stored to special file or db
     private  String password;
 
     public OneRepoConnector() {
+
     }
 
-    public OneRepoConnector(String name, String password) {
+/*    public   OneRepoConnector(String name, String password) {
         this.name = name;
         this.password = password;
+        REST_SERVICE_URI = "http://localhost:8080/rest";
+    }*/
+
+    public OneRepoConnector(String name, String password, String hostUrl) {
+        this.name = name;
+        this.password = password;
+        restServiceUrl = "http://localhost:"+hostUrl+"/rest";
     }
 
     private  HttpHeaders getHeaders() {
@@ -60,15 +68,27 @@ public class OneRepoConnector {
 
     }
 
-    RestTemplate restTemplate = new RestTemplate();
     HttpEntity<String> httpRequest(){
         return new HttpEntity<>(getHeaders());
     }
 
-    public <T>T connect(String url, HttpMethod httpMethod ,ParameterizedTypeReference<T> parameterizedType){
-        ResponseEntity<T> response = restTemplate.exchange(url, httpMethod, httpRequest(), parameterizedType);
-        return response.getBody();
+    @Override
+    public String getPepoName() {
+        return repoName;
     }
+
+    public <T>T connect(String url, HttpMethod httpMethod , ParameterizedTypeReference<T> parametrizedType){
+        try {
+            ResponseEntity<T> response = restTemplate.exchange(url, httpMethod, httpRequest(), parametrizedType);
+            return response.getBody();
+        }catch (Exception ex){
+
+            System.err.println( "problem with connection to "+repoName+" repository. " + ex.getMessage());
+            throw new RuntimeException( "problem with connection to "+repoName+" repository. " + ex.getMessage());
+        }
+    }
+
+
 
     public <T>T connect(String url, HttpMethod httpMethod , String jsonObject, ParameterizedTypeReference<T> parameterizedType){
         HttpHeaders headers = getHeaders();
@@ -77,17 +97,9 @@ public class OneRepoConnector {
         return response.getBody();
     }
 
-/*
-
-
-    public static void main(String[] args) {
-        OneRepoConnector connct = new OneRepoConnector("admin", "admin");
-
-        connct.connect(REST_SERVICE_URI + "/documents/", HttpMethod.GET, new ParameterizedTypeReference<List<DocumentRepoOne>>(){}).forEach(System.out::println);
-        DocumentRepoOne  doc= connct.connect(REST_SERVICE_URI + "/documents/name9", HttpMethod.GET, new ParameterizedTypeReference<DocumentRepoOne>(){});
-        System.out.println("======"+doc+"=======");
-
+    @Override
+    public void setRepoName(String repoName) {
+        this.repoName = repoName;
     }
-*/
 
 }
