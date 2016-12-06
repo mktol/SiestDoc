@@ -1,12 +1,9 @@
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.repo.one.model.Document;
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.junit.Assert;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
@@ -15,6 +12,8 @@ import java.util.List;
 /**
  * This class
  */
+/*@RunWith(SpringJUnit4ClassRunner.class)
+@SpringBootTest(classes = Application.class)*/
 public class SpringRestClient {
     public static final String REST_SERVICE_URI = "http://localhost:8080/rest";
 
@@ -28,12 +27,14 @@ public class SpringRestClient {
         return headers;
     }
 
-    private static List<Document> listAllDoc(){
+
+    public static List<Document> listAllDoc(){
         System.out.println("\nTest getDocks API---------------");
         RestTemplate restTemplate = new RestTemplate();
         HttpEntity<String> request = new HttpEntity<>(getHeaders());
         List<Document> response = restTemplate.exchange(REST_SERVICE_URI+"/documents/", HttpMethod.GET, request, new ParameterizedTypeReference<List<Document>>(){}).getBody();
         response.forEach(System.out::println);
+
         return response;
     }
 
@@ -42,30 +43,21 @@ public class SpringRestClient {
     private static void updateDocument() throws JsonProcessingException {
         System.out.println("Lets update document.");
         RestTemplate restTemplate = new RestTemplate();
-        HttpEntity<String> request = new HttpEntity<>(getHeaders());
         String docId2 = listAllDoc().get(1).getId();
         Document document = new Document(docId2, "custom NAME", "my title", "TEST CONTENT");
-        ObjectMapper mapper = new ObjectMapper();
-        String doc = mapper.writeValueAsString(document);
+        HttpEntity<Document> request = new HttpEntity<>(document, getHeaders());
 
-        restTemplate.put(REST_SERVICE_URI+"documents/"+docId2, document);
-//        Document resp = restTemplate.exchange(REST_SERVICE_URI+"/documents/"+docId2, HttpMethod.PUT, request, new ParameterizedTypeReference<Document>(){}).getBody();
 
-    }
+//        restTemplate.put(REST_SERVICE_URI+"documents/"+docId2, document);
+        ResponseEntity<Document> resp = restTemplate.exchange(REST_SERVICE_URI+"/documents/"+docId2, HttpMethod.PUT, request, new ParameterizedTypeReference<Document>(){});
+        System.out.println(resp.getStatusCode());
+        System.out.println(resp.getStatusCodeValue());
+        System.out.println(resp.getHeaders());
 
-    private static void deleteDocument(){
-        System.out.println("Lets delete document");
-        RestTemplate restTemplate = new RestTemplate();
-        HttpEntity<String> request = new HttpEntity<>(getHeaders());
-        String docId2 = listAllDoc().get(1).getId();
-        boolean resp = restTemplate.exchange(REST_SERVICE_URI+"/documents/"+docId2, HttpMethod.DELETE, request, new ParameterizedTypeReference<Boolean>(){}).getBody();
-        System.out.println(resp);
     }
 
     private static void addDocument() throws JsonProcessingException {
         Document document = new Document( "custom NAME", "my title", "TEST CONTENT");
-        ObjectMapper mapper = new ObjectMapper();
-        String doc = mapper.writeValueAsString(document);
         System.out.println("Lets update document.");
         RestTemplate restTemplate = new RestTemplate();
         HttpEntity<Document> request = new HttpEntity<>( document , getHeaders());
@@ -81,11 +73,20 @@ public class SpringRestClient {
         ResponseEntity<T> response = restTemplate.exchange(url, httpMethod, httpEntity, parameterizedType);
         return response.getBody();
     }*/
-
     public static void main(String[] args) throws JsonProcessingException {
         listAllDoc();
         updateDocument();
-        deleteDocument();
-        addDocument();
+//        deleteDocument();
+//        addDocument();
+    }
+
+/*    @Test*/
+    public  void deleteDocument(){
+        System.out.println("Lets delete document");
+        RestTemplate restTemplate = new RestTemplate();
+        HttpEntity<String> request = new HttpEntity<>(getHeaders());
+        String docId2 = listAllDoc().get(1).getId();
+        boolean resp = restTemplate.exchange(REST_SERVICE_URI+"/documents/"+docId2, HttpMethod.DELETE, request, new ParameterizedTypeReference<Boolean>(){}).getBody();
+        Assert.assertTrue(resp);
     }
 }

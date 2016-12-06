@@ -41,7 +41,8 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public Document update(Document document) {
-        return documentRepo.update(document);
+        documentRepo.saveUpdateByDocumentId(document.getId(), document);
+        return document;
     }
 
     @Override

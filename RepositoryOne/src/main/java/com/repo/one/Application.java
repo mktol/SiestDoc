@@ -1,7 +1,5 @@
 package com.repo.one;
 
-import java.util.Arrays;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
@@ -19,6 +17,7 @@ public class Application {
         for (String beanName : beanNames) {
             System.out.println(beanName);
         }*/
+
     }
 
 }

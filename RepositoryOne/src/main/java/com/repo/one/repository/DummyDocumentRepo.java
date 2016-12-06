@@ -4,7 +4,6 @@ import com.repo.one.model.Document;
 import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +37,7 @@ public class DummyDocumentRepo { // TODO CRUD must be rewritten !!!
             String content = RandomStringUtils.random(length*50, useLetters, useNumbers);
             docs.add(new Document(UUID.randomUUID().toString(), name+counter.incrementAndGet(), title, content));
         }
+        docs.add(new Document("5dd10405-e6e5-4bf9-8256-d75b45bb0596", "name", "title", "Some content"));
         return docs;
     }
 
@@ -69,8 +69,18 @@ public class DummyDocumentRepo { // TODO CRUD must be rewritten !!!
     }
 
     public Document update(Document document){ // TODO WRONG LOGIC
-        Optional<Document> doc = documents.stream().filter(d->d.getId().equals(document.getId())).findFirst();
-        Document upd = doc.orElseThrow(()->new IllegalArgumentException("Document is not present in storage.Id= "+document.getId()));
+        Document doc = documents.stream()
+                .filter(d->d.getId().equals(document.getId()))
+                .findFirst().orElseThrow(()->new IllegalArgumentException(" Document is not present in storage. Id = "+document.getId()));
+        doc.setTitle(document.getTitle());
+        doc.setName(document.getName());
+        doc.setContent(document.getContent());
+        doc.setId(document.getId());
+        doc.setMetadata(document.getMetadata());
+
+        for (int i = 0; i < documents.size(); i++) {
+
+        }
 
         return document;
     }
@@ -81,11 +91,12 @@ public class DummyDocumentRepo { // TODO CRUD must be rewritten !!!
         }
         for (int i = 0; i < documents.size(); i++) {
             if (documents.get(i).getId().equals(documentId)){
-                documents.add(i, document);
-            }else{
-                documents.add(document);
+                documents.set(i, document);
+                return;
             }
         }
+        documents.add(document);
+
 
     }
 

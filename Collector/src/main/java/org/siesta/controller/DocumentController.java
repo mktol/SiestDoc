@@ -48,8 +48,4 @@ public class DocumentController {
         return new ResponseEntity<Boolean>(res, HttpStatus.OK);
     }
 
-//    @RequestMapping("/documents")
-//    public @ResponseBody Document findDocById(@RequestParam("docId")String docId){
-//        return documentService.getDocByDocId(docId);
-//    }
 }
