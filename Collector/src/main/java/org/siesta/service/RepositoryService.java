@@ -11,7 +11,7 @@ public interface RepositoryService {
 
     List<Document> getAllDocuments() throws InterruptedException;
     Document getDocument(Long id);
-    boolean addDocument(Document document);
+    Document addDocument(Document document);
     boolean update(Document document);
 
     boolean delete(String docId);

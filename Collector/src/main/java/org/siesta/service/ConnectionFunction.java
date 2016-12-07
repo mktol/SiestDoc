@@ -1,6 +1,8 @@
 package org.siesta.service;
 
+import org.siesta.error.RepoConnectionException;
 import org.siesta.model.DocumentRepoOne;
+import org.springframework.web.client.ResourceAccessException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +21,11 @@ public class ConnectionFunction implements Function<Future<List<DocumentRepoOne>
 
             List<DocumentRepoOne> documentRepoOnes = listFuture.get(30, TimeUnit.SECONDS);
             return documentRepoOnes;
-        } catch (Exception ex) {
-            return new ArrayList<DocumentRepoOne>();
+        }catch (RepoConnectionException eae){
+            throw eae;
+        }catch (Exception ex) {
+
+            return new ArrayList<>();
         }
     }
 }

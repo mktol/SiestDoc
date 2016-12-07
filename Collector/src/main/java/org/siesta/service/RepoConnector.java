@@ -11,7 +11,7 @@ public interface RepoConnector {
 
     <T>T connect(String url, HttpMethod httpMethod , ParameterizedTypeReference<T> parameterizedType);
 
-    <T>T connect(String url, HttpMethod httpMethod , String jsonObject, ParameterizedTypeReference<T> parameterizedType);
+    <T>T connect(String url, HttpMethod httpMethod , T requestObj, ParameterizedTypeReference<T> parameterizedType);
 
     void setRepoName(String repoName);
 }

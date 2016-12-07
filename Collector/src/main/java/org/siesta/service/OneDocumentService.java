@@ -8,7 +8,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -25,7 +24,7 @@ public class OneDocumentService implements RepositoryService {
     @Autowired
     private OneRepoConnector connector;
     @Autowired
-    private CachedDocumentService documentService;
+    private CachedDocumentService cachedService;
     private List<RepoConnector> connectors = new ArrayList<>();
     private ExecutorService executor = Executors.newCachedThreadPool();
 
@@ -60,66 +59,65 @@ public class OneDocumentService implements RepositoryService {
 
     @Override
     public Document getDocument(Long id) {
-        Document doc = documentService.getDoc(id);
-
+        Document doc = cachedService.getDoc(id);
         return doc;
     }
 
     @Override
-    public boolean addDocument(Document document) {
-        documentService.saveUpdateDoc(document);
+    public Document addDocument(Document document) {
+        Document savedDoc = cachedService.saveUpdateDoc(document);
+        DocumentRepoOne documentRepoOne = ConverterUtil.convertToRepoOneDocument(savedDoc);
         RepoConnector repoConnector = connectors.get(0);
-/*        repoConnector.connect()*/
+        DocumentRepoOne doc = repoConnector.connect(OneRepoConnector.REST_SERVICE_URI + "/documents/", HttpMethod.POST, documentRepoOne , new ParameterizedTypeReference<DocumentRepoOne>() {});
+
         // Repo manager save doc in one of repository
-        return true;
+        return savedDoc;
     }
 
     @Override
     public boolean update(Document document) {
-        return false;
+        Document savedDoc = cachedService.saveUpdateDoc(document);
+        DocumentRepoOne documentRepoOne = ConverterUtil.convertToRepoOneDocument(savedDoc);
+        RepoConnector repoConnector = connectors.get(0);
+        DocumentRepoOne doc = repoConnector.connect(OneRepoConnector.REST_SERVICE_URI + "/documents/", HttpMethod.PUT, documentRepoOne , new ParameterizedTypeReference<DocumentRepoOne>() {});
+        if(doc == null){
+            return false;
+        }
+        return true;
     }
 
     @Override
     public boolean delete(String docId) {
-        Boolean res = connector.connect(OneRepoConnector.REST_SERVICE_URI + "/documents/" + docId, HttpMethod.DELETE, new ParameterizedTypeReference<Boolean>() {
-
-        });
-
-        // boolean resp = restTemplate.exchange(REST_SERVICE_URI+"/documents/"+docId2, HttpMethod.DELETE, request, new ParameterizedTypeReference<Boolean>(){}).getBody();
-
+        Boolean res = connector.connect(OneRepoConnector.REST_SERVICE_URI + "/documents/" + docId, HttpMethod.DELETE, new ParameterizedTypeReference<Boolean>() { });
         return res;
     }
 
     @Override
     public Document getDocumentByName(String name) {
-        return connector.connect(OneRepoConnector.REST_SERVICE_URI + "/documents/" + name + "/", HttpMethod.GET, new ParameterizedTypeReference<Document>() {
-
-        });
+        return connector.connect(OneRepoConnector.REST_SERVICE_URI + "/documents/" + name + "/", HttpMethod.GET, new ParameterizedTypeReference<Document>() {});
     }
 
     @Override
     public List<Document> getDocByDocId(String docId) {
 
-
-       /* List<DocumentRepoOne> res = connector.connect(OneRepoConnector.REST_SERVICE_URI + "/documents/" + docId, HttpMethod.GET, new ParameterizedTypeReference<List<DocumentRepoOne>>() {
-
-        });*/
         List<Callable<List<DocumentRepoOne>>> tasks = createTasks("/documents/" + docId, HttpMethod.GET, new ParameterizedTypeReference<List<DocumentRepoOne>>() {});
         List<List<DocumentRepoOne>> repoOnes = null; // make own collector
+        List<DocumentRepoOne> res = new ArrayList<>();
         try {
             repoOnes = executor.invokeAll(tasks).stream()
                     .map(new ConnectionFunction())
                     .collect(Collectors.toList());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 
-        List<DocumentRepoOne> res = new ArrayList<>();
+
         for (List<DocumentRepoOne> repoOne : repoOnes) {
             res.addAll(repoOne);
         }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
         return ConverterUtil.convertToDocumetnList(res);
-//        return ConverterUtil.convertToDocumetnList(res);
     }
 
     private <T> List<Callable<T>> createTasks(String url, HttpMethod method, ParameterizedTypeReference<T> parametrezedType) {

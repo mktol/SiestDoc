@@ -1,7 +1,14 @@
 package org.siesta.error;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
 /**
- * Created by mtol on 07.12.2016.
+ * not fond error handling
  */
+@ResponseStatus(HttpStatus.NOT_FOUND)
 public class DocumentNotFindException extends RuntimeException {
+    public DocumentNotFindException(String docId) {
+        super("could not find document. id = "+docId);
+    }
 }

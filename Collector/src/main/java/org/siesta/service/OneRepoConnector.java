@@ -1,6 +1,8 @@
 package org.siesta.service;
 
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.siesta.error.DocumentNotFindException;
+import org.siesta.error.RepoConnectionException;
 import org.siesta.model.DocumentRepoOne;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
@@ -46,21 +48,6 @@ public class OneRepoConnector implements RepoConnector{
         return headers;
     }
 
-    public  boolean connect(){
-        RestTemplate restTemplate = new RestTemplate();
-        HttpEntity<String> request = new HttpEntity<>(getHeaders());
-        try {
-            ResponseEntity<List<DocumentRepoOne>> response = restTemplate.exchange(REST_SERVICE_URI + "/documents/", GET, request, new ParameterizedTypeReference<List<DocumentRepoOne>>() {
-            });
-            List<DocumentRepoOne> docs = response.getBody();
-            docs.forEach(System.out::println);
-        }catch (ResourceAccessException connectException){
-            System.out.println(connectException.getMessage());
-            return false;
-        }
-        return true;
-
-    }
 
     HttpEntity<String> httpRequest(){
         return new HttpEntity<>(getHeaders());
@@ -75,17 +62,22 @@ public class OneRepoConnector implements RepoConnector{
         try {
             ResponseEntity<T> response = restTemplate.exchange(url, httpMethod, httpRequest(), parametrizedType);
             return response.getBody();
-        }catch (Exception ex){
+
+        }
+        catch (ResourceAccessException eae){
+            throw new RepoConnectionException(repoName);
+        }
+        catch (Exception ex){
             System.err.println( "problem with connection to "+repoName+" repository. " + ex.getMessage());
-            throw new RuntimeException( "problem with connection to "+repoName+" repository. " + ex.getMessage());
+            throw new DocumentNotFindException( "problem with connection to "+repoName+" repository. " + ex.getMessage());
         }
     }
 
 
 
-    public <T>T connect(String url, HttpMethod httpMethod , String jsonObject, ParameterizedTypeReference<T> parameterizedType){
+    public <T>T connect(String url, HttpMethod httpMethod , T requestObj, ParameterizedTypeReference<T> parameterizedType){
         HttpHeaders headers = getHeaders();
-        HttpEntity<String> httpEntity = new HttpEntity<>(jsonObject, headers);
+        HttpEntity<T> httpEntity = new HttpEntity<>(requestObj, headers);
         ResponseEntity<T> response = restTemplate.exchange(url, httpMethod, httpEntity, parameterizedType);
         return response.getBody();
     }
