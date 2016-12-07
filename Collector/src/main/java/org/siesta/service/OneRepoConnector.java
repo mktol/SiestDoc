@@ -30,12 +30,6 @@ public class OneRepoConnector implements RepoConnector{
 
     }
 
-/*    public   OneRepoConnector(String name, String password) {
-        this.name = name;
-        this.password = password;
-        REST_SERVICE_URI = "http://localhost:8080/rest";
-    }*/
-
     public OneRepoConnector(String name, String password, String hostUrl) {
         this.name = name;
         this.password = password;
@@ -82,7 +76,6 @@ public class OneRepoConnector implements RepoConnector{
             ResponseEntity<T> response = restTemplate.exchange(url, httpMethod, httpRequest(), parametrizedType);
             return response.getBody();
         }catch (Exception ex){
-
             System.err.println( "problem with connection to "+repoName+" repository. " + ex.getMessage());
             throw new RuntimeException( "problem with connection to "+repoName+" repository. " + ex.getMessage());
         }

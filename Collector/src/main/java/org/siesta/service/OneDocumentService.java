@@ -8,6 +8,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -45,14 +46,8 @@ public class OneDocumentService implements RepositoryService {
     @Override
     public List<Document> getAllDocuments() throws InterruptedException {
 
-/*        List<Callable<List<DocumentRepoOne>>> tasks = new ArrayList<>();
-        for (RepoConnector repoConnector : connectors) {
-            Callable<List<DocumentRepoOne>> future = () -> repoConnector.connect(((OneRepoConnector) repoConnector).restServiceUrl + "/documents/", HttpMethod.GET, new ParameterizedTypeReference<List<DocumentRepoOne>>() {});
-            tasks.add(future);
-        }*/
-
-        List<Callable<List<DocumentRepoOne>>> tasks =  creatTasks("/documents/", HttpMethod.GET );
-        List<List<DocumentRepoOne>> repoOnes = executor.invokeAll(tasks).stream()
+        List<Callable<List<DocumentRepoOne>>> tasks2 = createTasks("/documents/", HttpMethod.GET, new ParameterizedTypeReference<List<DocumentRepoOne>>() {});
+        List<List<DocumentRepoOne>> repoOnes = executor.invokeAll(tasks2).stream()
                 .map(new ConnectionFunction())
                 .collect(Collectors.toList()); // make own collector
 
@@ -105,22 +100,32 @@ public class OneDocumentService implements RepositoryService {
     @Override
     public List<Document> getDocByDocId(String docId) {
 
-        List<Callable<List<DocumentRepoOne>>> tasks = new ArrayList<>();
-        for (RepoConnector repoConnector : connectors) {
-            Callable<List<DocumentRepoOne>> future = () -> repoConnector.connect(((OneRepoConnector) repoConnector).restServiceUrl + "/documents/", HttpMethod.GET, new ParameterizedTypeReference<List<DocumentRepoOne>>() {});
-            tasks.add(future);
+
+       /* List<DocumentRepoOne> res = connector.connect(OneRepoConnector.REST_SERVICE_URI + "/documents/" + docId, HttpMethod.GET, new ParameterizedTypeReference<List<DocumentRepoOne>>() {
+
+        });*/
+        List<Callable<List<DocumentRepoOne>>> tasks = createTasks("/documents/" + docId, HttpMethod.GET, new ParameterizedTypeReference<List<DocumentRepoOne>>() {});
+        List<List<DocumentRepoOne>> repoOnes = null; // make own collector
+        try {
+            repoOnes = executor.invokeAll(tasks).stream()
+                    .map(new ConnectionFunction())
+                    .collect(Collectors.toList());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
-        List<DocumentRepoOne> res = connector.connect(OneRepoConnector.REST_SERVICE_URI + "/documents/" + docId, HttpMethod.GET, new ParameterizedTypeReference<List<DocumentRepoOne>>() {
-
-        });
+        List<DocumentRepoOne> res = new ArrayList<>();
+        for (List<DocumentRepoOne> repoOne : repoOnes) {
+            res.addAll(repoOne);
+        }
         return ConverterUtil.convertToDocumetnList(res);
+//        return ConverterUtil.convertToDocumetnList(res);
     }
 
-    private <T>List<Callable<T>> creatTasks(String url, HttpMethod method){
+    private <T> List<Callable<T>> createTasks(String url, HttpMethod method, ParameterizedTypeReference<T> parametrezedType) {
         List<Callable<T>> tasks = new ArrayList<>();
         for (RepoConnector repoConnector : connectors) {
-            Callable<T> future = () -> repoConnector.connect(((OneRepoConnector) repoConnector).restServiceUrl + url, HttpMethod.GET, new ParameterizedTypeReference<T>() {});
+            Callable<T> future = () -> repoConnector.connect(((OneRepoConnector) repoConnector).restServiceUrl + url, method, parametrezedType);
             tasks.add(future);
         }
         return tasks;
