@@ -2,6 +2,8 @@ package com.repo.one.service;
 
 import com.repo.one.model.Document;
 import com.repo.one.repository.DummyDocumentRepo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,9 @@ import java.util.UUID;
  */
 @Service
 public class DocumentServiceImpl implements DocumentService {
+
+    private final Logger logger = LoggerFactory.getLogger(DocumentServiceImpl.class);
+
     @Autowired
     private DummyDocumentRepo documentRepo;
 
@@ -27,6 +32,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public Document getDocument(String name) {
+        logger.info("get element with name " + name);
         return documentRepo.getByName(name).get(); //TODO rewrite it to correct code
 
     }
@@ -35,6 +41,7 @@ public class DocumentServiceImpl implements DocumentService {
     public Document setDocument(Document document) {
         if(document.getId()==null){
             document.setId(UUID.randomUUID().toString());
+            logger.debug("document id "+document.getId()+" is generated. ");
         }
         return documentRepo.create(document);
     }
@@ -47,7 +54,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public boolean remove(Document document) {
-        return documentRepo.remove(document);
+        return documentRepo.remove(document.getId());
     }
 
     @Override

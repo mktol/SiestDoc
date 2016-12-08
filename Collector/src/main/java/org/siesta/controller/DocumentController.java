@@ -1,11 +1,11 @@
 package org.siesta.controller;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.siesta.model.Document;
 import org.siesta.service.OneDocumentService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -18,18 +18,19 @@ import java.util.List;
 @Controller
 public class DocumentController {
 
+    private final Logger logger = LoggerFactory.getLogger(DocumentController.class);
+
     @Autowired
     private OneDocumentService documentService;
 
     @RequestMapping(value = "/documents",  method = RequestMethod.GET)
     public @ResponseBody List<Document> getAllDocuments(@RequestParam(value = "docId", required = false)String docId){
         if(docId==null) {
-            try {
+                logger.info("get all documents");
                 return documentService.getAllDocuments();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+
         }
+
         return documentService.getDocByDocId(docId);
     }
 
@@ -37,6 +38,7 @@ public class DocumentController {
     public @ResponseBody Document findDocByName(@RequestParam(value = "name", required = false) String name){
         return documentService.getDocumentByName(name);
     }
+
 
     @RequestMapping(value = "/documents/{docId}", method = RequestMethod.GET)
     public @ResponseBody List<Document> getDocumentById(@PathVariable(value = "docId", required = false)String docId){
@@ -53,13 +55,15 @@ public class DocumentController {
     @RequestMapping(value = "/documents", method = RequestMethod.PUT)
     public ResponseEntity<Boolean> updateDocument(@RequestBody Document document){
         Boolean isUpdated = documentService.update(document);
+
         return new ResponseEntity<>(isUpdated, HttpStatus.OK);
     }
+
 
     @RequestMapping(value = "/documents", method = RequestMethod.POST)
     public ResponseEntity<Document> saveDocument(@RequestBody( required = false) Document document){
         Document savedDocument = documentService.addDocument(document);
-        return new ResponseEntity<>(savedDocument, HttpStatus.OK);
+        return new ResponseEntity<>(savedDocument, HttpStatus.CREATED);
     }
 
 }

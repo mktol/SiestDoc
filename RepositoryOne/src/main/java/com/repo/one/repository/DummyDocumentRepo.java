@@ -2,6 +2,8 @@ package com.repo.one.repository;
 
 import com.repo.one.model.Document;
 import org.apache.commons.lang.RandomStringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +20,9 @@ import java.util.concurrent.atomic.AtomicLong;
 @Component
 @Scope("singleton")
 public class DummyDocumentRepo { // TODO CRUD must be rewritten !!!
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     private final AtomicLong counter = new AtomicLong();
 
     private List<Document> documents = new ArrayList<>();
@@ -38,6 +43,9 @@ public class DummyDocumentRepo { // TODO CRUD must be rewritten !!!
             docs.add(new Document(UUID.randomUUID().toString(), name+counter.incrementAndGet(), title, content));
         }
         docs.add(new Document("5dd10405-e6e5-4bf9-8256-d75b45bb0596", "name", "title", "Some content"));
+
+        logger.info(docs.size()+" documents are initialized.");
+
         return docs;
     }
 
@@ -46,6 +54,7 @@ public class DummyDocumentRepo { // TODO CRUD must be rewritten !!!
     }
 
     public Optional<Document> getByName(final String name){
+
         return documents.stream().filter(d->d.getName().equals(name)).findFirst();
     }
 
@@ -53,18 +62,16 @@ public class DummyDocumentRepo { // TODO CRUD must be rewritten !!!
         if(document!=null){
             document.setId(UUID.randomUUID().toString());
             documents.add(document);
+            logger.debug("document with Id "+document.getId()+" is created");
             return document;
         }else{
+            logger.error("document  "+document+" cant be created");
             throw new IllegalArgumentException("Document can not be null");
         }
     }
 
-    public boolean remove(Document document){
-        return documents.remove(document);
-
-    }
-
     public boolean remove(String id){
+        logger.debug("document with id "+id+" is removed");
         return documents.removeIf(document -> document.getId().equals(id));
     }
 
@@ -92,12 +99,12 @@ public class DummyDocumentRepo { // TODO CRUD must be rewritten !!!
         for (int i = 0; i < documents.size(); i++) {
             if (documents.get(i).getId().equals(documentId)){
                 documents.set(i, document);
+                logger.debug("document id = "+ documentId+" is updated");
                 return;
             }
         }
         documents.add(document);
-
-
+        logger.debug("document id = "+ documentId+" is new for repository and is added.");
     }
 
     public Optional<Document> getById(String docId) {

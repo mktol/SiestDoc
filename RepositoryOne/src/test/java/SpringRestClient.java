@@ -75,13 +75,13 @@ public class SpringRestClient {
     }*/
     public static void main(String[] args) throws JsonProcessingException {
         listAllDoc();
-        updateDocument();
-//        deleteDocument();
+//        updateDocument();
+        deleteDocument();
 //        addDocument();
     }
 
 /*    @Test*/
-    public  void deleteDocument(){
+    public static void deleteDocument(){
         System.out.println("Lets delete document");
         RestTemplate restTemplate = new RestTemplate();
         HttpEntity<String> request = new HttpEntity<>(getHeaders());

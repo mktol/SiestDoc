@@ -7,6 +7,10 @@ import org.springframework.http.HttpMethod;
  * This class
  */
 public interface RepoConnector {
+    String getUrl();
+
+    void setUrl(String url);
+
     String getPepoName();
 
     <T>T connect(String url, HttpMethod httpMethod , ParameterizedTypeReference<T> parameterizedType);
