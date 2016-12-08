@@ -1,8 +1,4 @@
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.apache.tomcat.util.codec.binary.Base64;
 import org.siesta.model.Document;
-import org.siesta.model.DocumentRepoOne;
-import org.siesta.service.ConverterUtil;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -10,7 +6,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
-import javax.print.Doc;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
@@ -21,21 +16,32 @@ import java.util.UUID;
 public class RestTest {
 
 
-//    private static Document getConcreteDoc()
+    private static Document document = new Document();
 
-    private static void addDocument() throws JsonProcessingException {
-        Document document = new Document();
+    private static RestTemplate restTemplate = new RestTemplate();
+//    private static Document getConcreteDoc()
+    private static void  initDocuments(){
         document.setComments(new ArrayList<>());
         document.setDocId(UUID.randomUUID().toString());
         document.setContent("balbalbala");
         document.setName("test name");
         document.setTitle("title 3003030");
         System.out.println("Lets update document.");
-        RestTemplate restTemplate = new RestTemplate();
+    }
 
+    private static void addDocument()  {
         HttpEntity<Document> request = new HttpEntity<>( document , getHeaders());
 //        restTemplate.postForEntity(REST_SERVICE_URI+"/documents", document, Document.class);
-        DocumentRepoOne document1= restTemplate.exchange("http://localhost:9000/documents", HttpMethod.POST, request, new ParameterizedTypeReference<DocumentRepoOne>(){}).getBody();
+        document= restTemplate.exchange("http://localhost:9000/documents", HttpMethod.POST, request, new ParameterizedTypeReference<Document>(){}).getBody();
+        System.out.println(document);
+    }
+
+    private static void updateDocument(){
+
+        HttpEntity<Document> request = new HttpEntity<>( document , getHeaders());
+        document.setTitle("update title");
+        document.setContent("Updated content");
+        Boolean document1= restTemplate.exchange("http://localhost:9000/documents", HttpMethod.PUT, request, new ParameterizedTypeReference<Boolean>(){}).getBody();
         System.out.println(document1);
     }
 
@@ -46,9 +52,11 @@ public class RestTest {
     }
 
     public static void main(String[] args) {
+        initDocuments();
         try {
             addDocument();
-        } catch (JsonProcessingException e) {
+            updateDocument();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

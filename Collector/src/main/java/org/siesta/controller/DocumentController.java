@@ -50,7 +50,7 @@ public class DocumentController {
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/documents}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/documents", method = RequestMethod.PUT)
     public ResponseEntity<Boolean> updateDocument(@RequestBody Document document){
         Boolean isUpdated = documentService.update(document);
         return new ResponseEntity<>(isUpdated, HttpStatus.OK);

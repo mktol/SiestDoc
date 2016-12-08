@@ -35,7 +35,7 @@ public class OneDocumentService implements RepositoryService {
         repoOneConnector.setRepoName("repoOne");
         repoOneConnector2.setRepoName("repoTwo");
         connectors.add(repoOneConnector);
-//        connectors.add(repoOneConnector2);
+        connectors.add(repoOneConnector2);
     }
 
     public void addConnector(RepoConnector repoConnector) {
@@ -79,7 +79,7 @@ public class OneDocumentService implements RepositoryService {
         Document savedDoc = cachedService.saveUpdateDoc(document);
         DocumentRepoOne documentRepoOne = ConverterUtil.convertToRepoOneDocument(savedDoc);
         RepoConnector repoConnector = connectors.get(0);
-        DocumentRepoOne doc = repoConnector.connect(OneRepoConnector.REST_SERVICE_URI + "/documents/", HttpMethod.PUT, documentRepoOne , new ParameterizedTypeReference<DocumentRepoOne>() {});
+        DocumentRepoOne doc = repoConnector.connect(OneRepoConnector.REST_SERVICE_URI + "/documents/"+savedDoc.getDocId(), HttpMethod.PUT, documentRepoOne , new ParameterizedTypeReference<DocumentRepoOne>() {});
         if(doc == null){
             return false;
         }

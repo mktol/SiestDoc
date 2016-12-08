@@ -1,5 +1,7 @@
 package org.siesta.model;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.List;
