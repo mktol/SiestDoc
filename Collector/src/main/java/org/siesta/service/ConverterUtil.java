@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 /**
  * This class
  */
-public class ConverterUtil {
+public class ConverterUtil { //TODO remove this
 
     public static Document convertToDocument(DocumentRepoOne doc){
         if(doc!=null) {

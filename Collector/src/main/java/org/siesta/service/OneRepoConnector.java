@@ -20,11 +20,11 @@ import java.util.Arrays;
 public class OneRepoConnector implements RepoConnector{
 
 //    public final String REST_SERVICE_URI ;
-    public static final String REST_SERVICE_URI = "http://localhost:8080/rest";
+    public static final String REST_SERVICE_URI = "http://localhost:8080/rest"; // TODO make it flexible , Add context param (war name)
     private final Logger logger = LoggerFactory.getLogger(OneRepoConnector.class);
     RestTemplate restTemplate = new RestTemplate();
     private String url;
-    private String repoName = "defoult";
+    private String repoName = "defoult"; // TODO repo name should be unique
     private  String name; //TODO should be encrypted and stored to special file or db
     private  String password;
 

@@ -8,6 +8,7 @@ import java.util.Set;
  */
 @Entity
 public class Index {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

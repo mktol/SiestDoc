@@ -16,7 +16,6 @@ public class ConnectionFunction implements Function<Future<List<DocumentRepoOne>
     @Override
     public List<DocumentRepoOne> apply(Future<List<DocumentRepoOne>> listFuture) {
         try {
-
             List<DocumentRepoOne> documentRepoOnes = listFuture.get(30, TimeUnit.SECONDS);
             return documentRepoOnes;
         }catch (Exception ex) {

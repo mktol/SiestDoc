@@ -1,8 +1,10 @@
 package org.siesta;
 
 import org.siesta.service.OneRepoConnector;
+import org.siesta.service.RepositoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +28,21 @@ public class Application {
 //            log.info("");
 //        };
 //    }
+
+    @Bean
+    CommandLineRunner init(RepositoryService repositoryService) {
+        return (args) ->{
+            OneRepoConnector repoOneConnector = new OneRepoConnector("admin", "admin");
+            OneRepoConnector repoOneConnector2 = new OneRepoConnector("admin", "admin");
+            repoOneConnector.setRepoName("repoOne");
+            repoOneConnector.setUrl("http://localhost:8080/rest");
+            repoOneConnector2.setUrl("http://localhost:8082/rest");
+            repoOneConnector2.setRepoName("repoTwo");
+            repositoryService.addConnector(repoOneConnector);
+            repositoryService.addConnector(repoOneConnector2);
+        };
+
+    }
 
     @Bean
     public OneRepoConnector oneRepoConnector(){

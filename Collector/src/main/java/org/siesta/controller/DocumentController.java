@@ -22,20 +22,19 @@ public class DocumentController {
 
     @Autowired
     private OneDocumentService documentService;
-
+//TODO make human remove docId from param
     @RequestMapping(value = "/documents",  method = RequestMethod.GET)
     public @ResponseBody List<Document> getAllDocuments(@RequestParam(value = "docId", required = false)String docId){
         if(docId==null) {
                 logger.info("get all documents");
                 return documentService.getAllDocuments();
-
         }
 
         return documentService.getDocByDocId(docId);
     }
 
-    @RequestMapping("/document")
-    public @ResponseBody Document findDocByName(@RequestParam(value = "name", required = false) String name){
+    @RequestMapping("/documents")
+    public @ResponseBody Document findDocByName(@RequestParam(value = "name") String name){
         return documentService.getDocumentByName(name);
     }
 
@@ -55,7 +54,6 @@ public class DocumentController {
     @RequestMapping(value = "/documents", method = RequestMethod.PUT)
     public ResponseEntity<Boolean> updateDocument(@RequestBody Document document){
         Boolean isUpdated = documentService.update(document);
-
         return new ResponseEntity<>(isUpdated, HttpStatus.OK);
     }
 

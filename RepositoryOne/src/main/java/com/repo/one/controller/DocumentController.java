@@ -14,10 +14,10 @@ public class DocumentController {
     @Autowired
     private DocumentService documentService;
 
-/*    @RequestMapping(value = "/rest/documents/", method = RequestMethod.GET)
+    @RequestMapping(value = "/rest/documents/", method = RequestMethod.GET)
     public List<Document> documents() {
         return documentService.getAll();
-    }*/
+    }
 
     @RequestMapping(value = "/rest/documents/{id}", method = RequestMethod.GET)
     public List<Document> documents(@PathVariable(value = "id", required = false) String documentId) {

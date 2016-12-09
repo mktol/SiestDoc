@@ -11,9 +11,9 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -34,21 +34,26 @@ public class OneDocumentService implements RepositoryService {
     private List<RepoConnector> connectors = new ArrayList<>();
     private ExecutorService executor = Executors.newCachedThreadPool();
 
-    @PostConstruct
+/*    @PostConstruct
     public void initConnectors() {// TODO add ability registration connectors
         OneRepoConnector repoOneConnector = new OneRepoConnector("admin", "admin");
         OneRepoConnector repoOneConnector2 = new OneRepoConnector("admin", "admin");
         repoOneConnector.setRepoName("repoOne");
         repoOneConnector.setUrl("http://localhost:8080/rest");
         repoOneConnector2.setUrl("http://localhost:8082/rest");
-//        repoOneConnector2.setRepoName("repoTwo");
+        repoOneConnector2.setRepoName("repoTwo");
         connectors.add(repoOneConnector);
-    }
+    }*/
 
+    @Override
     public void addConnector(RepoConnector repoConnector) {
         connectors.add(repoConnector);
     }
 
+    /**
+     * Get all documents in all repositories
+     * @return all documents
+     */
     @Override
     public List<Document> getAllDocuments() {
 
@@ -56,7 +61,7 @@ public class OneDocumentService implements RepositoryService {
         List<Callable<List<DocumentRepoOne>>> tasks2 = createTasks("/documents/", HttpMethod.GET, new ParameterizedTypeReference<List<DocumentRepoOne>>() {
         });
         try {
-            List<List<DocumentRepoOne>> repoOnes = executor.invokeAll(tasks2).stream()
+            List<List<DocumentRepoOne>> repoOnes = executor.invokeAll(tasks2).stream()  // TODO make it by for each
                     .map(new ConnectionFunction())
                     .collect(Collectors.toList());
             for (List<DocumentRepoOne> repoOne : repoOnes) {
@@ -68,7 +73,6 @@ public class OneDocumentService implements RepositoryService {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
         return ConverterUtil.convertToDocumetnList(res);
     }
 
@@ -117,12 +121,26 @@ public class OneDocumentService implements RepositoryService {
         return res;
     }
 
+    /**
+     * get document by name in repository
+     * @param name mame of repository
+     * @return document
+     */
     @Override
     public Document getDocumentByName(String name) {
-        return connector.connect(OneRepoConnector.REST_SERVICE_URI + "/documents/" + name + "/", HttpMethod.GET, new ParameterizedTypeReference<Document>() {
-        });
+        Optional<Document> document = cachedService.getDocumentByName(name);
+        return document.orElse(
+                ConverterUtil.convertToDocument(
+                        connector.connect(OneRepoConnector.REST_SERVICE_URI + "/documents/" + name + "/", HttpMethod.GET, new ParameterizedTypeReference<DocumentRepoOne>() {
+        })));
+
     }
 
+    /**
+     * Find document by document id in all repositories
+     * @param docId
+     * @return list of documents
+     */
     @Override
     public List<Document> getDocByDocId(String docId) {
 
@@ -157,7 +175,7 @@ public class OneDocumentService implements RepositoryService {
      * @return List of callable tasks
      */
     private <T> List<Callable<T>> createTasks(String url, HttpMethod method, ParameterizedTypeReference<T> parametrezedType) {
-        List<Callable<T>> tasks = new ArrayList<>();
+        List<Callable<T>> tasks = new ArrayList<>(); // TODO refactor it
         for (RepoConnector repoConnector : connectors) {
             Callable<T> future = () -> repoConnector.connect(repoConnector.getUrl() + url, method, parametrezedType);
             tasks.add(future);

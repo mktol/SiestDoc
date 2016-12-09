@@ -3,7 +3,7 @@ package org.siesta.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
- * This class
+ * Representation of document from RepoOne
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DocumentRepoOne {

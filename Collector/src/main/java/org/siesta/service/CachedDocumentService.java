@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * This class
@@ -21,7 +23,10 @@ public class CachedDocumentService {
     @Autowired
     private DocumentRepository documentRepository;
 
-    public Document saveUpdateDoc(Document document){
+    public Document saveUpdateDoc(Document document){ // TODO never save in to cache on insert
+        if(document.getDocId()==null || document.getDocId().isEmpty()){
+            document.setDocId(UUID.randomUUID().toString());
+        }
         logger.debug("Save document "+ document+" to local db");
         return documentRepository.save(document); // data jpa delegate it to persist or merge behind scene
     }
@@ -47,6 +52,8 @@ public class CachedDocumentService {
     }
 
 
-
-
+    public Optional<Document> getDocumentByName(String name) { // TODO remove optional from public method
+        logger.debug("find document with name "+name);
+        return documentRepository.findDocumentByName(name);
+    }
 }
