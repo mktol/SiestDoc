@@ -8,11 +8,13 @@ import java.util.List;
 public interface DocumentService {
 
     List<Document> getAll();
-    Document getDocument(Long id);
     Document getDocument(String name);
     Document setDocument(Document document);
     Document update(Document document);
     boolean remove(Document document);
+    boolean remove(String documentId);
 
-    Document saveDocument(Long position, Document document);
+    Document saveDocument(String position, Document document);
+
+    Document getDocumentByID(String documentId);
 }

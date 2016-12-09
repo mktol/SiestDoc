@@ -1,13 +1,11 @@
 package com.repo.one.model;
 
-import java.util.List;
-
 /**
  * This class
  */
 public class Document {
 
-    private Long id;
+    private String id;
     private String name;
     private String title;
     private String content;
@@ -16,18 +14,23 @@ public class Document {
     public Document() {
     }
 
-    public Document(Long id, String name, String title, String content) {
+    public Document(String id, String name, String title, String content) {
+        this(name, title, content);
         this.id = id;
+    }
+
+    public Document(String name, String title, String content) {
         this.name = name;
         this.title = title;
         this.content = content;
     }
 
-    public Long getId() {
+
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -61,5 +64,39 @@ public class Document {
 
     public void setMetadata(String metadata) {
         this.metadata = metadata;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Document document = (Document) o;
+
+        if (id != null ? !id.equals(document.id) : document.id != null) return false;
+        if (name != null ? !name.equals(document.name) : document.name != null) return false;
+        if (title != null ? !title.equals(document.title) : document.title != null) return false;
+        return content != null ? content.equals(document.content) : document.content == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (title != null ? title.hashCode() : 0);
+        result = 31 * result + (content != null ? content.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Document{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                ", metadata='" + metadata + '\'' +
+                '}';
     }
 }
