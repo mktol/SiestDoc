@@ -1,7 +1,5 @@
 package org.siesta.model;
 
-import com.fasterxml.jackson.annotation.JsonView;
-
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.List;
@@ -28,14 +26,6 @@ public class Document {
     private String content;
     @OneToMany(mappedBy = "document")
     private List<Comment> comments;
-
-    @ManyToOne
-    private RepoCred repository;
-
-
-    public void addRepository(RepoCred repoCred) {
-        this.repository = repoCred;
-    }
 
     public Long getId() {
         return id;
@@ -93,13 +83,4 @@ public class Document {
         this.docId = docId;
     }
 
-
-
-    public RepoCred getRepository() {
-        return repository;
-    }
-
-    public void setRepository(RepoCred repository) {
-        this.repository = repository;
-    }
 }

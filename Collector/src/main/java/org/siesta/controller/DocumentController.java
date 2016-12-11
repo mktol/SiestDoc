@@ -1,7 +1,7 @@
 package org.siesta.controller;
 
 import org.siesta.model.Document;
-import org.siesta.service.OneDocumentService;
+import org.siesta.service.ManageDocumentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ public class DocumentController {
     private final Logger logger = LoggerFactory.getLogger(DocumentController.class);
 
     @Autowired
-    private OneDocumentService documentService;
+    private ManageDocumentService documentService;
 //TODO make human remove docId from param
     @RequestMapping(value = "/documents",  method = RequestMethod.GET)
     public @ResponseBody List<Document> getAllDocuments(@RequestParam(value = "docId", required = false)String docId){

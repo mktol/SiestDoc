@@ -23,31 +23,21 @@ import java.util.stream.Collectors;
  * This class
  */
 @Service
-public class OneDocumentService implements RepositoryService {
+public class ManageDocumentService implements RepositoryService {
 
-    private final Logger logger = LoggerFactory.getLogger(OneDocumentService.class);
+    private final Logger logger = LoggerFactory.getLogger(ManageDocumentService.class);
 
     @Autowired
-    private OneRepoConnector connector;
+    private RepoConnector connector;
     @Autowired
     private CachedDocumentService cachedService;
-    private List<RepoConnector> connectors = new ArrayList<>();
+    private List<Connector> connectors = new ArrayList<>();
     private ExecutorService executor = Executors.newCachedThreadPool();
 
-/*    @PostConstruct
-    public void initConnectors() {// TODO add ability registration connectors
-        OneRepoConnector repoOneConnector = new OneRepoConnector("admin", "admin");
-        OneRepoConnector repoOneConnector2 = new OneRepoConnector("admin", "admin");
-        repoOneConnector.setRepoName("repoOne");
-        repoOneConnector.setUrl("http://localhost:8080/rest");
-        repoOneConnector2.setUrl("http://localhost:8082/rest");
-        repoOneConnector2.setRepoName("repoTwo");
-        connectors.add(repoOneConnector);
-    }*/
 
     @Override
-    public void addConnector(RepoConnector repoConnector) {
-        connectors.add(repoConnector);
+    public void addConnector(Connector connector) {
+        connectors.add(connector);
     }
 
     /**
@@ -88,8 +78,8 @@ public class OneDocumentService implements RepositoryService {
     public Document addDocument(Document document) {
         Document savedDoc = cachedService.saveUpdateDoc(document);
         DocumentRepoOne documentRepoOne = ConverterUtil.convertToRepoOneDocument(savedDoc);
-        RepoConnector repoConnector = connectors.get(0);
-        repoConnector.connect(OneRepoConnector.REST_SERVICE_URI + "/documents/", HttpMethod.POST, documentRepoOne, new ParameterizedTypeReference<DocumentRepoOne>() {
+        Connector connector = connectors.get(0);
+        connector.connect(RepoConnector.REST_SERVICE_URI + "/documents/", HttpMethod.POST, documentRepoOne, new ParameterizedTypeReference<DocumentRepoOne>() {
         });
         logger.debug("add document. "+savedDoc);
         // Repo manager save doc in one of repository
@@ -101,8 +91,8 @@ public class OneDocumentService implements RepositoryService {
         validateUpdateDoc(document);
         Document savedDoc = cachedService.saveUpdateDoc(document);
         DocumentRepoOne documentRepoOne = ConverterUtil.convertToRepoOneDocument(savedDoc);
-        RepoConnector repoConnector = connectors.get(0);
-        DocumentRepoOne doc = repoConnector.connect(OneRepoConnector.REST_SERVICE_URI + "/documents/" + savedDoc.getDocId(), HttpMethod.PUT, documentRepoOne, new ParameterizedTypeReference<DocumentRepoOne>() {
+        Connector connector = connectors.get(0);
+        DocumentRepoOne doc = connector.connect(RepoConnector.REST_SERVICE_URI + "/documents/" + savedDoc.getDocId(), HttpMethod.PUT, documentRepoOne, new ParameterizedTypeReference<DocumentRepoOne>() {
         });
         if (doc == null) {
             logger.debug("cant update document with id "+doc.getId());
@@ -116,7 +106,7 @@ public class OneDocumentService implements RepositoryService {
     @Override
     public boolean delete(String docId) {
         cachedService.deleteDocument(docId); //TODO find Repository by repo name
-        Boolean res = connector.connect(OneRepoConnector.REST_SERVICE_URI + "/documents/" + docId, HttpMethod.DELETE, new ParameterizedTypeReference<Boolean>() {
+        Boolean res = connector.connect(RepoConnector.REST_SERVICE_URI + "/documents/" + docId, HttpMethod.DELETE, new ParameterizedTypeReference<Boolean>() {
         });
         return res;
     }
@@ -131,7 +121,7 @@ public class OneDocumentService implements RepositoryService {
         Optional<Document> document = cachedService.getDocumentByName(name);
         return document.orElse(
                 ConverterUtil.convertToDocument(
-                        connector.connect(OneRepoConnector.REST_SERVICE_URI + "/documents/" + name + "/", HttpMethod.GET, new ParameterizedTypeReference<DocumentRepoOne>() {
+                        connector.connect(RepoConnector.REST_SERVICE_URI + "/documents/" + name + "/", HttpMethod.GET, new ParameterizedTypeReference<DocumentRepoOne>() {
         })));
 
     }
@@ -176,8 +166,8 @@ public class OneDocumentService implements RepositoryService {
      */
     private <T> List<Callable<T>> createTasks(String url, HttpMethod method, ParameterizedTypeReference<T> parametrezedType) {
         List<Callable<T>> tasks = new ArrayList<>(); // TODO refactor it
-        for (RepoConnector repoConnector : connectors) {
-            Callable<T> future = () -> repoConnector.connect(repoConnector.getUrl() + url, method, parametrezedType);
+        for (Connector connector : connectors) {
+            Callable<T> future = () -> connector.connect(connector.getUrl() + url, method, parametrezedType);
             tasks.add(future);
         }
         return tasks;

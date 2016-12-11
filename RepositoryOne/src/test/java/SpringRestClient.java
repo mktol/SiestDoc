@@ -18,11 +18,11 @@ public class SpringRestClient {
     public static final String REST_SERVICE_URI = "http://localhost:8080/rest";
 
     private static HttpHeaders getHeaders(){
-        String plainCredentials="admin:admin";
-        String base64Credentials = new String(Base64.encodeBase64(plainCredentials.getBytes()));
+//        String plainCredentials="admin:admin";
+//        String base64Credentials = new String(Base64.encodeBase64(plainCredentials.getBytes()));
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Basic " + base64Credentials);
+//        headers.add("Authorization", "Basic " + base64Credentials);
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         return headers;
     }

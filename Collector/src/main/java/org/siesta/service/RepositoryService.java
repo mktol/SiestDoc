@@ -15,7 +15,7 @@ public interface RepositoryService {
     boolean update(Document document);
 
     boolean delete(String docId);
-    void addConnector(RepoConnector repoConnector);
+    void addConnector(Connector connector);
 
     Document getDocumentByName(String name);
     List<Document> getDocByDocId(String docId);
