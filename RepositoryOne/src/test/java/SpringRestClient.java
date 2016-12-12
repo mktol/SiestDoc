@@ -15,7 +15,7 @@ import java.util.List;
 /*@RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = Application.class)*/
 public class SpringRestClient {
-    public static final String REST_SERVICE_URI = "http://localhost:8080/rest";
+    public static final String REST_SERVICE_URI = "http://localhost:8080/siesta/rest";
 
     private static HttpHeaders getHeaders(){
 //        String plainCredentials="admin:admin";

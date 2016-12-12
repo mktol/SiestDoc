@@ -29,7 +29,7 @@ public class Application {
 //        };
 //    }
 
-    @Bean
+/*    @Bean
     CommandLineRunner init(RepositoryService repositoryService) {
         return (args) ->{
             RepoConnector repoRepoConnector = new RepoConnector("admin", "admin");
@@ -47,5 +47,5 @@ public class Application {
     @Bean
     public RepoConnector oneRepoConnector(){
         return new RepoConnector("admin", "admin");
-    }
+    }*/
 }

@@ -36,8 +36,13 @@ public class ManageDocumentService implements RepositoryService {
 
 
     @Override
-    public void addConnector(Connector connector) {
-        connectors.add(connector);
+    public boolean addConnector(Connector connector) {
+        return connectors.add(connector);
+    }
+
+    public boolean removeConnector(String name){
+        Connector removed = connectors.stream().filter(conn->conn.getPepoName().equals(name)).findFirst().orElse(null);
+        return removed == null || connectors.remove(removed);
     }
 
     /**
@@ -79,7 +84,7 @@ public class ManageDocumentService implements RepositoryService {
         Document savedDoc = cachedService.saveUpdateDoc(document);
         DocumentRepoOne documentRepoOne = ConverterUtil.convertToRepoOneDocument(savedDoc);
         Connector connector = connectors.get(0);
-        connector.connect(RepoConnector.REST_SERVICE_URI + "/documents/", HttpMethod.POST, documentRepoOne, new ParameterizedTypeReference<DocumentRepoOne>() {
+        connector.connect(connector.getUrl() + "/documents/", HttpMethod.POST, documentRepoOne, new ParameterizedTypeReference<DocumentRepoOne>() {
         });
         logger.debug("add document. "+savedDoc);
         // Repo manager save doc in one of repository
@@ -92,7 +97,7 @@ public class ManageDocumentService implements RepositoryService {
         Document savedDoc = cachedService.saveUpdateDoc(document);
         DocumentRepoOne documentRepoOne = ConverterUtil.convertToRepoOneDocument(savedDoc);
         Connector connector = connectors.get(0);
-        DocumentRepoOne doc = connector.connect(RepoConnector.REST_SERVICE_URI + "/documents/" + savedDoc.getDocId(), HttpMethod.PUT, documentRepoOne, new ParameterizedTypeReference<DocumentRepoOne>() {
+        DocumentRepoOne doc = connector.connect(connector.getUrl() + "/documents/" + savedDoc.getDocId(), HttpMethod.PUT, documentRepoOne, new ParameterizedTypeReference<DocumentRepoOne>() {
         });
         if (doc == null) {
             logger.debug("cant update document with id "+doc.getId());
@@ -106,7 +111,7 @@ public class ManageDocumentService implements RepositoryService {
     @Override
     public boolean delete(String docId) {
         cachedService.deleteDocument(docId); //TODO find Repository by repo name
-        Boolean res = connector.connect(RepoConnector.REST_SERVICE_URI + "/documents/" + docId, HttpMethod.DELETE, new ParameterizedTypeReference<Boolean>() {
+        Boolean res = connector.connect(connector.getUrl() + "/documents/" + docId, HttpMethod.DELETE, new ParameterizedTypeReference<Boolean>() {
         });
         return res;
     }
@@ -121,7 +126,7 @@ public class ManageDocumentService implements RepositoryService {
         Optional<Document> document = cachedService.getDocumentByName(name);
         return document.orElse(
                 ConverterUtil.convertToDocument(
-                        connector.connect(RepoConnector.REST_SERVICE_URI + "/documents/" + name + "/", HttpMethod.GET, new ParameterizedTypeReference<DocumentRepoOne>() {
+                        connector.connect(connector.getUrl() + "/documents/" + name + "/", HttpMethod.GET, new ParameterizedTypeReference<DocumentRepoOne>() {
         })));
 
     }

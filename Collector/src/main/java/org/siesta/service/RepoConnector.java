@@ -19,30 +19,34 @@ import java.util.Arrays;
 @Component
 public class RepoConnector implements Connector {
 
-//    public final String REST_SERVICE_URI ;
-    public static final String REST_SERVICE_URI = "http://localhost:8080/rest"; // TODO make it flexible , Add context param (war name)
+//    public static final String REST_SERVICE_URI = "http://localhost:8080/rest"; // TODO make it flexible , Add context param (war name)
     private final Logger logger = LoggerFactory.getLogger(RepoConnector.class);
     RestTemplate restTemplate = new RestTemplate();
     private String url;
-    private String repoName = "defoult"; // TODO repo name should be unique
-    private  String name; //TODO should be encrypted and stored to special file or db
-    private  String password;
+    private String repoName; // TODO repo name should be unique
+/*    private  String name; //TODO should be encrypted and stored to special file or db
+    private  String password;*/
 
     public RepoConnector() {
 
     }
 
-    public RepoConnector(String name, String password) {
-        this.name = name;
-        this.password = password;
+    public RepoConnector(String url, String repoName) {
+        this.url = url;
+        this.repoName = repoName;
     }
 
+    /*    public RepoConnector(String name, String password) {
+        this.name = name;
+        this.password = password;
+    }*/
+
     private  HttpHeaders getHeaders() {
-        String plainCredentials = name+":"+password;
-        String base64Credentials = new String(Base64.encodeBase64(plainCredentials.getBytes()));
+/*        String plainCredentials = name+":"+password;
+        String base64Credentials = new String(Base64.encodeBase64(plainCredentials.getBytes()));*/
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Basic " + base64Credentials);
+//        headers.add("Authorization", "Basic " + base64Credentials);
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         return headers;
     }

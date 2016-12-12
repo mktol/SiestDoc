@@ -13,24 +13,22 @@ public class RegistrationService {
 
     @Autowired
     private ManageDocumentService manageDocumentService;
+
     @Autowired
     private RepoRepository repository;
+
     public Boolean registration(String connectUrl, String repoName) {
         //TODO add url and name validation
 
-        Repository newRepository = new Repository(connectUrl, repoName);
-        repository.save(newRepository);
-        RepoConnector repoConnector = new RepoConnector();
-        repoConnector.setRepoName(repoName);
-        repoConnector.setRepoName(connectUrl);
-        return null;
+/*        Repository newRepository = new Repository(connectUrl, repoName);
+        repository.save(newRepository);*/
+        RepoConnector repoConnector = new RepoConnector(connectUrl, repoName);
+        return manageDocumentService.addConnector(repoConnector);
+
     }
 
-    public Boolean cancelOfRegistration(String connectUrl, String repoName) {
-
-
-        return null;
-
+    public Boolean cancelOfRegistration(String repoName) {
+        return manageDocumentService.removeConnector(repoName);
     }
 
 

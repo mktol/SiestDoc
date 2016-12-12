@@ -23,6 +23,6 @@ public class RepositoryRegisterContoroller {
     }
     @RequestMapping(value = "/unregistration", method = RequestMethod.POST)
     public Boolean unrergister(@RequestParam("connectUrl")String connectUrl,@RequestParam("name") String repoName){
-        return registrationService.cancelOfRegistration(connectUrl, repoName);
+        return registrationService.cancelOfRegistration(repoName);
     }
 }

@@ -3,6 +3,7 @@ package com.repo.one.controller;
 import com.repo.one.model.Document;
 import com.repo.one.service.DocumentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -14,8 +15,12 @@ public class DocumentController {
     @Autowired
     private DocumentService documentService;
 
+    @Value("${app.name}")
+    private String appName;
+
     @RequestMapping(value = "/rest/documents/", method = RequestMethod.GET)
     public List<Document> documents() {
+        System.out.println(appName);
         return documentService.getAll();
     }
 
