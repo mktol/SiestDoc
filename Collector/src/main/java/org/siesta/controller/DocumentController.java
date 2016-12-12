@@ -27,7 +27,7 @@ public class DocumentController {
     public @ResponseBody List<Document> getAllDocuments(@RequestParam(value = "docId", required = false)String docId){
         if(docId==null) {
                 logger.info("get all documents");
-                return documentService.getAllDocuments();
+                return documentService.getAllDocuments2();
         }
 
         return documentService.getDocByDocId(docId);

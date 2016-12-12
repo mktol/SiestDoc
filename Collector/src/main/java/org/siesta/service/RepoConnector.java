@@ -1,6 +1,5 @@
 package org.siesta.service;
 
-import org.apache.tomcat.util.codec.binary.Base64;
 import org.siesta.error.DocumentNotFindException;
 import org.siesta.error.RepoConnectionException;
 import org.slf4j.Logger;
@@ -19,7 +18,7 @@ import java.util.Arrays;
 @Component
 public class RepoConnector implements Connector {
 
-//    public static final String REST_SERVICE_URI = "http://localhost:8080/rest"; // TODO make it flexible , Add context param (war name)
+    //    public static final String REST_SERVICE_URI = "http://localhost:8080/rest"; // TODO make it flexible , Add context param (war name)
     private final Logger logger = LoggerFactory.getLogger(RepoConnector.class);
     RestTemplate restTemplate = new RestTemplate();
     private String url;
@@ -41,7 +40,7 @@ public class RepoConnector implements Connector {
         this.password = password;
     }*/
 
-    private  HttpHeaders getHeaders() {
+    private HttpHeaders getHeaders() {
 /*        String plainCredentials = name+":"+password;
         String base64Credentials = new String(Base64.encodeBase64(plainCredentials.getBytes()));*/
 
@@ -52,7 +51,7 @@ public class RepoConnector implements Connector {
     }
 
 
-    HttpEntity<String> httpRequest(){
+    HttpEntity<String> httpRequest() {
         return new HttpEntity<>(getHeaders());
     }
 
@@ -73,39 +72,38 @@ public class RepoConnector implements Connector {
 
     /**
      * Method connect to repository
-     * @param url connection url
-     * @param httpMethod http method
+     *
+     * @param url              connection url
+     * @param httpMethod       http method
      * @param parametrizedType prarmeterized type reference
-     * @param <T> type of returned response value
+     * @param <T>              type of returned response value
      * @return response
      */
-    public <T>T connect(String url, HttpMethod httpMethod , ParameterizedTypeReference<T> parametrizedType){
+    public <T> T connect(String url, HttpMethod httpMethod, ParameterizedTypeReference<T> parametrizedType) {
         try {
             HttpEntity<String> request = new HttpEntity<>(getHeaders());
             ResponseEntity<T> response = restTemplate.exchange(url, httpMethod, request, parametrizedType);
             return response.getBody();
-        }
-        catch (ResourceAccessException eae){
+        } catch (ResourceAccessException eae) {
             throw new RepoConnectionException(repoName);
-        }
-        catch (Exception ex){
-            logger.error( "problem with connection to "+repoName+" repository. " + ex.getMessage());
-            throw new DocumentNotFindException( "problem with connection to "+repoName+" repository. " + ex.getMessage());
+        } catch (Exception ex) {
+            logger.error("problem with connection to " + repoName + " repository. " + ex.getMessage());
+            throw new DocumentNotFindException("problem with connection to " + repoName + " repository. " + ex.getMessage());
         }
     }
 
 
     /**
-
      * Method connect to repository
-     * @param url connection url
-     * @param httpMethod http method
-     * @param requestObj object for sending in request body
+     *
+     * @param url               connection url
+     * @param httpMethod        http method
+     * @param requestObj        object for sending in request body
      * @param parameterizedType
-     * @param <T> type of returned response value
+     * @param <T>               type of returned response value
      * @return response
      */
-    public <T>T connect(String url, HttpMethod httpMethod , T requestObj, ParameterizedTypeReference<T> parameterizedType){
+    public <T> T connect(String url, HttpMethod httpMethod, T requestObj, ParameterizedTypeReference<T> parameterizedType) {
         HttpHeaders headers = getHeaders();
         HttpEntity<T> httpEntity = new HttpEntity<>(requestObj, headers);
         ResponseEntity<T> response = restTemplate.exchange(url, httpMethod, httpEntity, parameterizedType);

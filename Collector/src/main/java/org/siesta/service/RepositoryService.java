@@ -10,6 +10,7 @@ import java.util.List;
 public interface RepositoryService {
 
     List<Document> getAllDocuments() throws InterruptedException;
+    List<Document> getAllDocuments2() throws InterruptedException;
     Document getDocument(Long id);
     Document addDocument(Document document);
     boolean update(Document document);

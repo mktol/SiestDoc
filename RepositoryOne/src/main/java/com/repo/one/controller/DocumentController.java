@@ -9,22 +9,24 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@RestController()
+@RestController(value = "/siesta")
 public class DocumentController {
 
+
+    private  final String appName;
     @Autowired
     private DocumentService documentService;
 
-    @Value("${app.name}")
-    private String appName;
+    public DocumentController(@Value("${spring.application.name}") String appName) {
+        this.appName = appName;
+    }
 
-    @RequestMapping(value = "/rest/documents/", method = RequestMethod.GET)
+    @RequestMapping(value = "/siesta/rest/documents/", method = RequestMethod.GET)
     public List<Document> documents() {
-        System.out.println(appName);
         return documentService.getAll();
     }
 
-    @RequestMapping(value = "/rest/documents/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/siesta/rest/documents/{id}", method = RequestMethod.GET)
     public List<Document> documents(@PathVariable(value = "id", required = false) String documentId) {
         if (documentId == null) {
             return documentService.getAll();
@@ -41,12 +43,12 @@ public class DocumentController {
      * @param document
      * @return
      */
-    @RequestMapping(value = "/rest/documents/{id}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/siesta/rest/documents/{id}", method = RequestMethod.PUT)
     public Document saveConcreateDocument(@PathVariable("id") String documentId, @RequestBody() Document document) {
         return documentService.saveDocument(documentId, document);
     }
 
-    @RequestMapping(value = "/rest/documents", method = RequestMethod.POST, consumes = {"application/json"})
+    @RequestMapping(value = "/siesta/rest/documents", method = RequestMethod.POST, consumes = {"application/json"})
     public Document saveDocument(@RequestBody() Document document) {
         return documentService.setDocument(document);
     }
@@ -66,9 +68,8 @@ public class DocumentController {
         return false;
     }
 
-    @RequestMapping(value = "/rest/documents/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/siesta/rest/documents/{id}", method = RequestMethod.DELETE)
     public boolean deleteDocument(@PathVariable("id") String documentId) {
         return documentService.remove(documentId);
     }
-
 }

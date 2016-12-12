@@ -1,6 +1,5 @@
 package org.siesta.service;
 
-import org.siesta.model.Repository;
 import org.siesta.repository.RepoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +28,10 @@ public class RegistrationService {
 
     public Boolean cancelOfRegistration(String repoName) {
         return manageDocumentService.removeConnector(repoName);
+    }
+
+    public void checkConnection(){
+
     }
 
 

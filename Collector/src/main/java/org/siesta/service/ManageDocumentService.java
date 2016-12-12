@@ -2,6 +2,7 @@ package org.siesta.service;
 
 import org.siesta.error.DocumentNotFindException;
 import org.siesta.error.NotContentException;
+import org.siesta.error.RepoConnectionException;
 import org.siesta.model.Document;
 import org.siesta.model.DocumentRepoOne;
 import org.slf4j.Logger;
@@ -14,9 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 /**
@@ -33,7 +32,6 @@ public class ManageDocumentService implements RepositoryService {
     private CachedDocumentService cachedService;
     private List<Connector> connectors = new ArrayList<>();
     private ExecutorService executor = Executors.newCachedThreadPool();
-
 
     @Override
     public boolean addConnector(Connector connector) {
@@ -69,6 +67,38 @@ public class ManageDocumentService implements RepositoryService {
             e.printStackTrace();
         }
         return ConverterUtil.convertToDocumetnList(res);
+    }
+
+    public List<Document> getAllDocuments2(){
+        List<Callable<List<DocumentRepoOne>>> tasks = new ArrayList<>(); // TODO refactor it
+        for (Connector connector : connectors) {
+            Callable<List<DocumentRepoOne>> future = () -> connector.connect(connector.getUrl() +"/documents/" ,HttpMethod.GET , new ParameterizedTypeReference<List<DocumentRepoOne>>() {});
+            tasks.add(future);
+        }
+        List<DocumentRepoOne> result = new ArrayList<>();
+        for (Callable<List<DocumentRepoOne>> task : tasks) {
+            Future<List<DocumentRepoOne>> res = executor.submit(task);
+            try {
+                List<DocumentRepoOne> docs= res.get(20, TimeUnit.SECONDS);
+                result.addAll(docs);
+            } catch (Exception e) {
+                logger.error("problem with connection to repository. "+e.getMessage());
+                removeConnector(e);
+            }
+        }
+        List<Document> documents = ConverterUtil.convertToDocumetnList(result);
+
+        return ConverterUtil.convertToDocumetnList(result);
+    }
+
+    /**
+     * Remove connector from cached connectors if application cant connect ot repository.
+     * @param connectionError
+     */
+    private void removeConnector(Exception connectionError){
+        if(connectionError.getCause() instanceof RepoConnectionException){
+            removeConnector(connectionError.getCause().getMessage());
+        }
     }
 
     @Override
@@ -111,8 +141,7 @@ public class ManageDocumentService implements RepositoryService {
     @Override
     public boolean delete(String docId) {
         cachedService.deleteDocument(docId); //TODO find Repository by repo name
-        Boolean res = connector.connect(connector.getUrl() + "/documents/" + docId, HttpMethod.DELETE, new ParameterizedTypeReference<Boolean>() {
-        });
+        Boolean res = connector.connect(connector.getUrl() + "/documents/" + docId, HttpMethod.DELETE, new ParameterizedTypeReference<Boolean>() {});
         return res;
     }
 

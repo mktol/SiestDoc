@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * Endpoint for registration/ cancelOfRegistration of repository
@@ -17,12 +18,12 @@ public class RepositoryRegisterContoroller {
     private RegistrationService registrationService;
 
     @RequestMapping(value = "/registration", method = RequestMethod.POST)
-    public Boolean registrationRepository(@RequestParam("connectUrl") String connectUrl,
-                                          @RequestParam("name") String repoName){
+    public @ResponseBody Boolean registrationRepository(@RequestParam("connectUrl") String connectUrl,
+                                   @RequestParam("name") String repoName){
         return registrationService.registration(connectUrl, repoName);
     }
     @RequestMapping(value = "/unregistration", method = RequestMethod.POST)
-    public Boolean unrergister(@RequestParam("connectUrl")String connectUrl,@RequestParam("name") String repoName){
+    public @ResponseBody Boolean unrergister(@RequestParam("name") String repoName){
         return registrationService.cancelOfRegistration(repoName);
     }
 }
