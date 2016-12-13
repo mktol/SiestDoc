@@ -87,7 +87,6 @@ public class ManageDocumentService implements RepositoryService {
             }
         }
         List<Document> documents = ConverterUtil.convertToDocumetnList(result);
-
         return ConverterUtil.convertToDocumetnList(result);
     }
 

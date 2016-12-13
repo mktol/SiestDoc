@@ -99,14 +99,14 @@ public class RepoConnector implements Connector {
      * @param url               connection url
      * @param httpMethod        http method
      * @param requestObj        object for sending in request body
-     * @param parameterizedType
+     * @param parametrizedType
      * @param <T>               type of returned response value
      * @return response
      */
-    public <T> T connect(String url, HttpMethod httpMethod, T requestObj, ParameterizedTypeReference<T> parameterizedType) {
+    public <T> T connect(String url, HttpMethod httpMethod, T requestObj, ParameterizedTypeReference<T> parametrizedType) {
         HttpHeaders headers = getHeaders();
         HttpEntity<T> httpEntity = new HttpEntity<>(requestObj, headers);
-        ResponseEntity<T> response = restTemplate.exchange(url, httpMethod, httpEntity, parameterizedType);
+        ResponseEntity<T> response = restTemplate.exchange(url, httpMethod, httpEntity, parametrizedType);
         return response.getBody();
     }
 
