@@ -2,7 +2,6 @@ package org.siesta.controller;
 
 import org.siesta.model.Document;
 import org.siesta.service.HandleDocumentService;
-import org.siesta.service.ManageDocumentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,54 +21,40 @@ public class DocumentController {
     private final Logger logger = LoggerFactory.getLogger(DocumentController.class);
 
     @Autowired
-    private ManageDocumentService documentService;
-    @Autowired
     private HandleDocumentService handleDocumentService;
-//TODO make human remove docId from param
-    @RequestMapping(value = "/documents",  method = RequestMethod.GET)
-    public @ResponseBody List<Document> getAllDocuments(@RequestParam(value = "docId", required = false)String docId){
-        if(docId==null) {
-                logger.info("get all documents");
-                return handleDocumentService.getAll();
-        }
 
-        Document document = handleDocumentService.getDocumentById(docId);
-        List<Document> res = new ArrayList<>();
-        res.add(document);
-        return res;
-//        return documentService.getDocByDocId(docId);
+    @RequestMapping(value = "/documents", method = RequestMethod.GET)
+    public
+    @ResponseBody
+    List<Document> getAllDocuments() {
+        return handleDocumentService.getAll();
     }
 
-//    @RequestMapping("/documents")
-//    public @ResponseBody Document findDocByName(@RequestParam(value = "name") String name){
-//        return documentService.getDocumentByName(name);
-//    }
-
-
     @RequestMapping(value = "/documents/{docId}", method = RequestMethod.GET)
-    public @ResponseBody Document getDocumentById(@PathVariable(value = "docId", required = false)String docId){
-
-//        List<Document> docs = documentService.getDocByDocId(docId);
-
+    public
+    @ResponseBody Document getDocumentById(@PathVariable(value = "docId", required = false) String docId) {
         return handleDocumentService.getDocumentById(docId);
     }
 
     @RequestMapping(value = "/documents/{docId}", method = RequestMethod.DELETE)
-    public ResponseEntity<Boolean> deleteDocument(@PathVariable(value = "docId", required = false)String docId){
-//        Boolean res = documentService.delete(docId);
+    public ResponseEntity<Boolean> deleteDocument(@PathVariable(value = "docId", required = false) String docId) {
         Boolean res = handleDocumentService.deleteDocument(docId);
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/documents", method = RequestMethod.PUT)
-    public ResponseEntity<Boolean> updateDocument(@RequestBody Document document){
-        Boolean isUpdated = handleDocumentService.updateDocument(document); // TODO add simple lgic if documnet is not updated
-        return new ResponseEntity<>(isUpdated, HttpStatus.OK);
+    public ResponseEntity<Boolean> updateDocument(@RequestBody Document document) {
+        Boolean isUpdated = handleDocumentService.updateDocument(document);
+        if(isUpdated){
+            return new ResponseEntity<>(isUpdated, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(isUpdated, HttpStatus.NOT_FOUND);
+        }
     }
 
 
     @RequestMapping(value = "/documents", method = RequestMethod.POST)
-    public ResponseEntity<Document> saveDocument(@RequestBody( required = false) Document document){
+    public ResponseEntity<Document> saveDocument(@RequestBody(required = false) Document document) {
         Document savedDocument = handleDocumentService.addDocument(document);
         return new ResponseEntity<>(savedDocument, HttpStatus.CREATED);
     }

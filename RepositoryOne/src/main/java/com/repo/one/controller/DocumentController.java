@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@RestController(value = "/siesta")
+@RestController()
 public class DocumentController {
 
 
@@ -63,7 +63,7 @@ public class DocumentController {
     public boolean updateDocument(@RequestBody() Document document) {
         if (document != null) {
             documentService.update(document);
-            return true; // TODO rewrite this method. Handle exception or ...
+            return true;
         }
         return false;
     }

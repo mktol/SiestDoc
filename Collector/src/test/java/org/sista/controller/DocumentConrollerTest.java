@@ -19,7 +19,7 @@ import static org.junit.Assert.assertNotNull;
  */
 public class DocumentConrollerTest {
     private static final String REST_SERVICE_URI = "http://localhost:9000";
-    private static final String DOCUMENT_ID = "5dd10405-e6e5-4bf9-8256-d75b45bb0596";
+    private static final String DOCUMENT_ID = "5dd10405-e6e5-4bf9-8256-d75b45bb0596_repoOne1";
     HttpEntity<String> request = new HttpEntity<>(getHeaders());
     Document newDocument;
     private HttpHeaders headers;
@@ -57,7 +57,7 @@ public class DocumentConrollerTest {
         HttpEntity<Document> request = new HttpEntity<>( newDocument , getHeaders());
         ResponseEntity<Document> document= restTemplate.exchange(REST_SERVICE_URI+"/documents", HttpMethod.POST, request, new ParameterizedTypeReference<Document>(){});
         assertEquals(201, document.getStatusCodeValue());
-        assertNotNull("Service must create new random id. ", document.getBody().getId());
+        assertNotNull("Service must create new random id. ", document.getBody().getDocId());
     }
 
     @Test
@@ -75,8 +75,8 @@ public class DocumentConrollerTest {
     @Test
     public void testGetConcreteDoc(){
         HttpEntity<Document> request = new HttpEntity<>(  getHeaders());
-        List<Document> response = restTemplate.exchange(REST_SERVICE_URI+"/documents/"+DOCUMENT_ID, HttpMethod.GET, request, new ParameterizedTypeReference<List<Document>>(){}).getBody();
-        assertNotNull(response.get(0));
+        Document response = restTemplate.exchange(REST_SERVICE_URI+"/documents/"+DOCUMENT_ID, HttpMethod.GET, request, new ParameterizedTypeReference<Document>(){}).getBody();
+        assertNotNull(response);
     }
 
 }

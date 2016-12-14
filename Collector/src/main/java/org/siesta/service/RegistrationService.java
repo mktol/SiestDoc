@@ -1,6 +1,5 @@
 package org.siesta.service;
 
-import org.siesta.repository.RepoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,34 +10,24 @@ import org.springframework.stereotype.Service;
 public class RegistrationService {
 
     @Autowired
-    private ManageDocumentService manageDocumentService;
-    @Autowired
     private HandleDocumentService handleDocumentService;
 
-    @Autowired
-    private RepoRepository repository;
+
 
     public Boolean registration(String connectUrl, String repoName) {
-        //TODO add url and name validation
 
+        if(!validateName(repoName)){
+            return false;
+        }
         SiestaConnector siestaConnector = new SiestaConnector();
         siestaConnector.setName(repoName);
         siestaConnector.setUrl(connectUrl);
-        handleDocumentService.addConnector(siestaConnector);
-/*        Repository newRepository = new Repository(connectUrl, repoName);
-        repository.save(newRepository);*/
-        RepoConnector repoConnector = new RepoConnector(connectUrl, repoName);
-        return manageDocumentService.addConnector(repoConnector);
+        return handleDocumentService.addConnector(siestaConnector);
 
     }
 
-    public Boolean cancelOfRegistration(String repoName) {
-        return manageDocumentService.removeConnector(repoName);
+    private boolean validateName(String name){
+        return handleDocumentService.getConnectors().stream().noneMatch(connector -> connector.getName().equals(name));
     }
-
-    public void checkConnection(){
-
-    }
-
 
 }

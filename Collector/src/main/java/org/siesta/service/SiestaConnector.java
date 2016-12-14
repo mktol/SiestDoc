@@ -10,6 +10,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by mtol on 13.12.2016.
@@ -65,6 +66,9 @@ public class SiestaConnector {
     }
 
     public Document addDocument(Document document){
+        if(document.getDocId()==null){
+            document.setDocId(UUID.randomUUID().toString());
+        }
         DocumentRepoOne newDoc = ConverterUtil.convertToRepoOneDocument(document);
         HttpEntity<DocumentRepoOne> request = new HttpEntity<>( newDoc, getHeaders());
         DocumentRepoOne document1= restTemplate.exchange(url+"/documents", HttpMethod.POST, request, new ParameterizedTypeReference<DocumentRepoOne>(){}).getBody();

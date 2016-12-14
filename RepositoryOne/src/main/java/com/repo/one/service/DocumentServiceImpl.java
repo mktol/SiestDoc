@@ -33,7 +33,8 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     public Document getDocument(String name) {
         logger.info("get element with name " + name);
-        return documentRepo.getByName(name).get(); //TODO rewrite it to correct code
+        Document document = documentRepo.getByName(name).orElse(null);
+        return document; //TODO rewrite it to correct code
 
     }
 

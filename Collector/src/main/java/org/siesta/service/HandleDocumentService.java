@@ -4,6 +4,7 @@ import org.siesta.error.DocumentNotFindException;
 import org.siesta.model.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -21,14 +22,16 @@ public class HandleDocumentService {
 
     private final Logger logger = LoggerFactory.getLogger(HandleDocumentService.class);
     ExecutorService executor = Executors.newCachedThreadPool();
+    @Autowired
+    private CachedDocumentService cachedDocumentService;
     private List<SiestaConnector> connectors = new ArrayList<>();
 
     public List<SiestaConnector> getConnectors() {
         return connectors;
     }
 
-    public void addConnector(SiestaConnector connector){
-        connectors.add(connector);
+    public boolean addConnector(SiestaConnector connector){
+        return connectors.add(connector);
     }
     public List<Document> getAll(){
 
@@ -47,12 +50,17 @@ public class HandleDocumentService {
                 logger.error(e.getCause().getMessage());
             }
         }
-
-        return resultList;
+        cachedDocumentService.saveDocument(resultList);
+        return cachedDocumentService.getAll();
+//        return resultList;
     }
 
 
     public Document getDocumentById(String docId){
+        Document document = cachedDocumentService.getByDocumentId(docId);
+        if(document!=null){
+            return document;
+        }
         String repoName = ConverterUtil.getNameFromId(docId);
         SiestaConnector siestaConnector = getConnectorByName(repoName);
         String documentId = ConverterUtil.getDocumentId(docId);
@@ -93,6 +101,7 @@ public class HandleDocumentService {
     }
 
     public boolean updateDocument(Document document){
+        cachedDocumentService.deleteDocument(document.getDocId());
         String docId = document.getDocId();
         String repoName = ConverterUtil.getNameFromId(docId);
         SiestaConnector siestaConnector = getConnectorByName(repoName);
@@ -103,6 +112,7 @@ public class HandleDocumentService {
     }
 
     public boolean deleteDocument(String docId){
+        cachedDocumentService.deleteDocument(docId);
         String repoName = ConverterUtil.getNameFromId(docId);
         String cleanDocId = ConverterUtil.getDocumentId(docId);
         SiestaConnector siestaConnector = getConnectorByName(repoName);

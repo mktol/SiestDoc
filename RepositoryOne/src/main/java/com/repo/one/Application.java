@@ -1,6 +1,8 @@
 package com.repo.one;
 
 import com.repo.one.service.AutoRegistrationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -17,6 +19,8 @@ import java.io.IOException;
 @SpringBootApplication
 @ConfigurationProperties(value = "application.properties")
 public class Application {
+
+    private final Logger logger = LoggerFactory.getLogger(Application.class);
 
     public static void main(String[] args) {
         ApplicationContext ctx = SpringApplication.run(Application.class, args);
@@ -43,7 +47,12 @@ public class Application {
 
             System.out.println("Let's inspect the beans provided by Spring Boot:");
 
-            System.out.println(autoRegistrationService.registrationIntoCollector());
+            boolean isRegistered = autoRegistrationService.registrationIntoCollector();
+            if(isRegistered){
+               logger.info("Service successfully registered");
+            }else{
+                logger.error("Service not registered, wrong repository name, collector url, or problem with connection to collector");
+            }
 
         };
     }

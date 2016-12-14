@@ -11,8 +11,6 @@ import java.util.Set;
 @Entity
 public class Document {
     @Id
-    @GeneratedValue
-    private Long id;
     private String docId;
     private String name;
     private String title;
@@ -27,13 +25,13 @@ public class Document {
     @OneToMany(mappedBy = "document")
     private List<Comment> comments;
 
-    public Long getId() {
+/*    public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
-    }
+    }*/
 
     public String getName() {
         return name;
@@ -83,4 +81,25 @@ public class Document {
         this.docId = docId;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Document document = (Document) o;
+
+        if (docId != null ? !docId.equals(document.docId) : document.docId != null) return false;
+        if (name != null ? !name.equals(document.name) : document.name != null) return false;
+        if (title != null ? !title.equals(document.title) : document.title != null) return false;
+        return content != null ? content.equals(document.content) : document.content == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = docId != null ? docId.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (title != null ? title.hashCode() : 0);
+        result = 31 * result + (content != null ? content.hashCode() : 0);
+        return result;
+    }
 }

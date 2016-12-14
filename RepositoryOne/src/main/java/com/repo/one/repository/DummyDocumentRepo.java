@@ -75,22 +75,6 @@ public class DummyDocumentRepo { // TODO CRUD must be rewritten !!!
         return documents.removeIf(document -> document.getId().equals(id));
     }
 
-    public Document update(Document document){ // TODO WRONG LOGIC
-        Document doc = documents.stream()
-                .filter(d->d.getId().equals(document.getId()))
-                .findFirst().orElseThrow(()->new IllegalArgumentException(" Document is not present in storage. Id = "+document.getId()));
-        doc.setTitle(document.getTitle());
-        doc.setName(document.getName());
-        doc.setContent(document.getContent());
-        doc.setId(document.getId());
-        doc.setMetadata(document.getMetadata());
-
-        for (int i = 0; i < documents.size(); i++) {
-
-        }
-
-        return document;
-    }
 
     public void saveUpdateByDocumentId(String documentId, Document document) {
         if(document==null){
