@@ -2,8 +2,8 @@ package org.siesta.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.PostConstruct;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -19,6 +19,7 @@ public class ConnectorChecker {
     @Autowired
     private HandleDocumentService documentService;
 
+    @PostConstruct
     public void connectorsChecker(){
         CheckConnectorsTask connectorsTask = new CheckConnectorsTask(documentService.getConnectors());
         executorService.schedule(connectorsTask, 30, TimeUnit.SECONDS);

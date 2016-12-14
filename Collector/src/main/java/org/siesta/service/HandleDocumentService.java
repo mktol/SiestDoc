@@ -4,6 +4,7 @@ import org.siesta.error.DocumentNotFindException;
 import org.siesta.model.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class HandleDocumentService {
 
     public void addConnector(SiestaConnector connector){
         connectors.add(connector);
-    };
+    }
     public List<Document> getAll(){
 
         List<FutureTask<List<Document>>> tasks = new ArrayList<>();
@@ -120,5 +121,18 @@ public class HandleDocumentService {
         String repoName = ConverterUtil.getNameFromId(document.getDocId());
         SiestaConnector siestaConnector = getConnectorByName(repoName);
         return siestaConnector.addDocument(document);
+    }
+
+    /**
+     * Method check alive connection.
+     */
+    @Scheduled(fixedRate = 30_000)
+    public void connectorsChecker(){
+        for (SiestaConnector connector : connectors) {
+            if(!connector.isConnectionALive()){
+                connectors.remove(connector);
+                logger.warn(" Connector "+connector.getName()+" is not accessible. Connector is removed. ");
+            }
+        }
     }
 }

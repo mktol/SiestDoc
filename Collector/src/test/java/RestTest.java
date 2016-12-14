@@ -1,5 +1,3 @@
-package java;
-
 import org.siesta.model.Document;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
