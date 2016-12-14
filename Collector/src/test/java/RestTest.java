@@ -1,3 +1,5 @@
+package java;
+
 import org.siesta.model.Document;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -11,7 +13,7 @@ import java.util.Arrays;
 import java.util.UUID;
 
 /**
- * Created by mtol on 07.12.2016.
+ * Class for testing crud query. Not unit testing
  */
 public class RestTest {
 

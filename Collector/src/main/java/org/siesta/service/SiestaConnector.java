@@ -2,6 +2,8 @@ package org.siesta.service;
 
 import org.siesta.model.Document;
 import org.siesta.model.DocumentRepoOne;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
@@ -13,6 +15,7 @@ import java.util.List;
  * Created by mtol on 13.12.2016.
  */
 public class SiestaConnector {
+    private final Logger logger = LoggerFactory.getLogger(SiestaConnector.class);
 
     private String name;
     private RestTemplate restTemplate = new RestTemplate();
@@ -68,6 +71,17 @@ public class SiestaConnector {
         Document res = ConverterUtil.convertToDocument(document1);
         changeDocumentId(res);
         return res;
+    }
+
+    public boolean isConnectionALive(){
+        HttpEntity<Document> request = new HttpEntity<>(  getHeaders());
+        try {
+            restTemplate.exchange(url+"/isalive", HttpMethod.GET, request, new ParameterizedTypeReference<Boolean>(){});
+            return true;
+        }catch (Exception ex){
+            logger.warn("problem with connection to repo = "+name, ex);
+            return false;
+        }
     }
 
     public String getName() {

@@ -22,6 +22,10 @@ public class HandleDocumentService {
     ExecutorService executor = Executors.newCachedThreadPool();
     private List<SiestaConnector> connectors = new ArrayList<>();
 
+    public List<SiestaConnector> getConnectors() {
+        return connectors;
+    }
+
     public void addConnector(SiestaConnector connector){
         connectors.add(connector);
     };
@@ -71,7 +75,6 @@ public class HandleDocumentService {
                 resultList.add(document);
             } catch (Exception e) {
                 e.printStackTrace();
-
             }
         }
         if(resultList.isEmpty()){
