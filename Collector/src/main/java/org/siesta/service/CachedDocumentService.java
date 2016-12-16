@@ -11,10 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
- * This class
+ * This is cache service for
  */
 @Service
 public class CachedDocumentService {
@@ -26,14 +25,6 @@ public class CachedDocumentService {
 
     @Autowired
     private DocumentRepository documentRepository;
-
-    public Document saveUpdateDoc(Document document){ // TODO never save in to cache on insert
-        if(document.getDocId()==null || document.getDocId().isEmpty()){
-            document.setDocId(UUID.randomUUID().toString());
-        }
-        logger.debug("Save document "+ document+" to local db");
-        return documentRepository.save(document); // data jpa delegate it to persist or merge behind scene
-    }
 
     public Document getDoc(Long id){
         logger.debug("find document by id "+ id);

@@ -13,7 +13,7 @@ import java.util.UUID;
 /**
  * Class for testing crud query. Not unit testing
  */
-public class RestTest {
+public class restTest {
 
 
     private static Document document = new Document();

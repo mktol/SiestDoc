@@ -64,6 +64,9 @@ public class HandleDocumentService {
         String repoName = ConverterUtil.getNameFromId(docId);
         SiestaConnector siestaConnector = getConnectorByName(repoName);
         String documentId = ConverterUtil.getDocumentId(docId);
+        if(documentId.isEmpty()){
+            throw new DocumentNotFindException();
+        }
         if(siestaConnector!=null){
             return siestaConnector.getDocumentById(documentId);
         }
@@ -130,6 +133,9 @@ public class HandleDocumentService {
         }
         String repoName = ConverterUtil.getNameFromId(document.getDocId());
         SiestaConnector siestaConnector = getConnectorByName(repoName);
+        if(siestaConnector == null) {
+            throw new DocumentNotFindException(document.getDocId());
+        }
         return siestaConnector.addDocument(document);
     }
 
@@ -138,11 +144,16 @@ public class HandleDocumentService {
      */
     @Scheduled(fixedRate = 30_000)
     public void connectorsChecker(){
+        List<SiestaConnector> unWorkedConnectors = new ArrayList<>();
         for (SiestaConnector connector : connectors) {
             if(!connector.isConnectionALive()){
-                connectors.remove(connector);
+                unWorkedConnectors.add(connector);
                 logger.warn(" Connector "+connector.getName()+" is not accessible. Connector is removed. ");
             }
         }
+        if(!unWorkedConnectors.isEmpty()){
+            connectors.removeAll(unWorkedConnectors);
+        }
+
     }
 }
