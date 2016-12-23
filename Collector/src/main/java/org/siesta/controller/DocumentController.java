@@ -18,8 +18,9 @@ import java.util.List;
 @Controller
 public class DocumentController {
 
+    private static final String DOCUMENTS_PATH = "/documents";
+    private static final String DOC_ID_PATH_VAR = "/{docId}";
     private final Logger logger = LoggerFactory.getLogger(DocumentController.class);
-
     @Autowired
     private HandleDocumentService handleDocumentService;
 
@@ -30,7 +31,7 @@ public class DocumentController {
         return handleDocumentService.getAll();
     }
 
-    @RequestMapping(value = "/documents/{docId}", method = RequestMethod.GET)
+    @RequestMapping(value = DOCUMENTS_PATH+DOC_ID_PATH_VAR, method = RequestMethod.GET)
     public
     @ResponseBody Document getDocumentById(@PathVariable(value = "docId", required = false) String docId) {
         return handleDocumentService.getDocumentById(docId);
@@ -51,7 +52,6 @@ public class DocumentController {
             return new ResponseEntity<>(isUpdated, HttpStatus.NOT_FOUND);
         }
     }
-
 
     @RequestMapping(value = "/documents", method = RequestMethod.POST)
     public ResponseEntity<Document> saveDocument(@RequestBody(required = false) Document document) {

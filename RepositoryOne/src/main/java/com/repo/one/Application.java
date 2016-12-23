@@ -30,7 +30,7 @@ public class Application {
 
     private static void printCat(){
         try {
-            File file = new ClassPathResource("cat.txt").getFile();
+            File file = new ClassPathResource("banner.txt").getFile();
             String s = new String(FileCopyUtils.copyToByteArray(file));
             System.out.println(s);
 

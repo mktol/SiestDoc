@@ -12,14 +12,15 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableScheduling
-public class Application {
+public class ApplicationCollector {
 
-    private static final Logger log = LoggerFactory.getLogger(Application.class);
+    private static final Logger log = LoggerFactory.getLogger(ApplicationCollector.class);
 
     public static void main(String[] args) {
-        SpringApplication.run(Application.class);
+        SpringApplication.run(ApplicationCollector.class);
     }
 
+    // showing H2 console
     @Bean
     public ServletRegistrationBean h2servletRegistration() {
         ServletRegistrationBean registration = new ServletRegistrationBean(new WebServlet());

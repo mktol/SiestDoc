@@ -65,10 +65,12 @@ public class SiestaConnector {
         return false;
     }
 
-    public void handleResourceAccessException(Exception exception){
-        if (exception.getCause() instanceof ResourceAccessException) {
+    private void handleResourceAccessException(Exception exception){ //TODO handle All exceptions by List
+        if (exception.getCause() instanceof ResourceAccessException) { //TODO Вертати чесний результат
             logger.error("Repository " + name + " is not available.");
             throw new RepoConnectionException(name);
+        }else{
+            
         }
         logger.error("Problem with communication with repository " + name, exception);
     }

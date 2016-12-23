@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**
- * This is cache service for
+ * This is cache service for document
  */
 @Service
 public class CachedDocumentService {
