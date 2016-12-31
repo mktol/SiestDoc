@@ -15,8 +15,7 @@ public class Comment {
     private String content;
     private Date postedDate;
 
-    @ManyToOne
-    private User user;
+    private String user;
 
     @ManyToOne
     private Document document;
@@ -29,11 +28,11 @@ public class Comment {
         this.id = id;
     }
 
-    public User getUser() {
+    public String getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(String user) {
         this.user = user;
     }
 

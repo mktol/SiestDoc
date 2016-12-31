@@ -15,23 +15,11 @@ public class Document {
     private String name;
     private String title;
 
-    @ManyToMany
-    @JoinTable(name="DOC_INDEXES")
-    private Set<Index> indexes = new HashSet<>();
-
     @Lob
     @Column
     private String content;
     @OneToMany(mappedBy = "document")
     private List<Comment> comments;
-
-/*    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }*/
 
     public String getName() {
         return name;
@@ -47,14 +35,6 @@ public class Document {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public Set<Index> getIndexes() {
-        return indexes;
-    }
-
-    public void setIndexes(Set<Index> indexes) {
-        this.indexes = indexes;
     }
 
     public String getContent() {

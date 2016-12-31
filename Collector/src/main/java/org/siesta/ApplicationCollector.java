@@ -27,4 +27,8 @@ public class ApplicationCollector {
         registration.addUrlMappings("/console/*");
         return registration;
     }
+
+    //TODO handle exception witch threw in multithreading methods into exceptions list
+    //TODO Use Aspect and Annotation for using cache
+
 }
