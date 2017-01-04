@@ -1,7 +1,5 @@
 package org.siesta.model;
 
-import com.fasterxml.jackson.annotation.JsonView;
-
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.List;
@@ -13,37 +11,15 @@ import java.util.Set;
 @Entity
 public class Document {
     @Id
-    @GeneratedValue
-    private Long id;
     private String docId;
     private String name;
     private String title;
-
-    @ManyToMany
-    @JoinTable(name="DOC_INDEXES")
-    private Set<Index> indexes = new HashSet<>();
 
     @Lob
     @Column
     private String content;
     @OneToMany(mappedBy = "document")
     private List<Comment> comments;
-
-    @ManyToOne
-    private RepoCred repository;
-
-
-    public void addRepository(RepoCred repoCred) {
-        this.repository = repoCred;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -59,14 +35,6 @@ public class Document {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public Set<Index> getIndexes() {
-        return indexes;
-    }
-
-    public void setIndexes(Set<Index> indexes) {
-        this.indexes = indexes;
     }
 
     public String getContent() {
@@ -93,13 +61,25 @@ public class Document {
         this.docId = docId;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
+        Document document = (Document) o;
 
-    public RepoCred getRepository() {
-        return repository;
+        if (docId != null ? !docId.equals(document.docId) : document.docId != null) return false;
+        if (name != null ? !name.equals(document.name) : document.name != null) return false;
+        if (title != null ? !title.equals(document.title) : document.title != null) return false;
+        return content != null ? content.equals(document.content) : document.content == null;
     }
 
-    public void setRepository(RepoCred repository) {
-        this.repository = repository;
+    @Override
+    public int hashCode() {
+        int result = docId != null ? docId.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (title != null ? title.hashCode() : 0);
+        result = 31 * result + (content != null ? content.hashCode() : 0);
+        return result;
     }
 }

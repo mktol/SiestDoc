@@ -1,6 +1,6 @@
 package com.repo.one.security;
 
-import java.io.IOException;
+/*import java.io.IOException;
 import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
@@ -29,4 +29,4 @@ public class CustomBasicAuthenticationEntryPoint extends BasicAuthenticationEntr
         setRealmName("MY_TEST_REALM");
         super.afterPropertiesSet();
     }
-}
+}*/

@@ -60,9 +60,9 @@ public class DummyDocumentRepo { // TODO CRUD must be rewritten !!!
 
     public Document create(Document document){
         if(document!=null){
-            document.setId(UUID.randomUUID().toString());
+            document.setDocId(UUID.randomUUID().toString());
             documents.add(document);
-            logger.debug("document with Id "+document.getId()+" is created");
+            logger.debug("document with Id "+document.getDocId()+" is created");
             return document;
         }else{
             logger.error("document  "+document+" cant be created");
@@ -72,32 +72,16 @@ public class DummyDocumentRepo { // TODO CRUD must be rewritten !!!
 
     public boolean remove(String id){
         logger.debug("document with id "+id+" is removed");
-        return documents.removeIf(document -> document.getId().equals(id));
+        return documents.removeIf(document -> document.getDocId().equals(id));
     }
 
-    public Document update(Document document){ // TODO WRONG LOGIC
-        Document doc = documents.stream()
-                .filter(d->d.getId().equals(document.getId()))
-                .findFirst().orElseThrow(()->new IllegalArgumentException(" Document is not present in storage. Id = "+document.getId()));
-        doc.setTitle(document.getTitle());
-        doc.setName(document.getName());
-        doc.setContent(document.getContent());
-        doc.setId(document.getId());
-        doc.setMetadata(document.getMetadata());
-
-        for (int i = 0; i < documents.size(); i++) {
-
-        }
-
-        return document;
-    }
 
     public void saveUpdateByDocumentId(String documentId, Document document) {
         if(document==null){
             throw new  IllegalArgumentException("wrong data: docId = "+documentId+", document = "+document);
         }
         for (int i = 0; i < documents.size(); i++) {
-            if (documents.get(i).getId().equals(documentId)){
+            if (documents.get(i).getDocId().equals(documentId)){
                 documents.set(i, document);
                 logger.debug("document id = "+ documentId+" is updated");
                 return;
@@ -108,6 +92,6 @@ public class DummyDocumentRepo { // TODO CRUD must be rewritten !!!
     }
 
     public Optional<Document> getById(String docId) {
-        return documents.stream().filter(document -> document.getId().equals(docId)).findAny();
+        return documents.stream().filter(document -> document.getDocId().equals(docId)).findAny();
     }
 }

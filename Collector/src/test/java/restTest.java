@@ -11,9 +11,9 @@ import java.util.Arrays;
 import java.util.UUID;
 
 /**
- * Created by mtol on 07.12.2016.
+ * Class for testing crud query. Not unit testing
  */
-public class RestTest {
+public class restTest {
 
 
     private static Document document = new Document();

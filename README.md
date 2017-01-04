@@ -5,7 +5,7 @@ Application consist with 2 logical modules: Collector and Repository.
 Repository is REST service that contains documents and provide REST endpoints to perform CRUD operations on documents. 
 Document is an entity with next JSON structure:
 {
-    "id": "<document id>",
+    "docId": "<document docId>",
     "name": "<document name>",
     "title": "<document title>",
     "indexes": {
@@ -15,8 +15,8 @@ Document is an entity with next JSON structure:
     "content": "<document text content>",
     "comments": [
         {
-            "id": "comment id",
-            "userId": "the id of the user which left the comment",
+            "docId": "comment docId",
+            "userId": "the docId of the user which left the comment",
             "content": "comment text content"
         }
     ]
@@ -31,7 +31,7 @@ Requirements
 2.	Application should expose next REST endpoints to:
 
     - get all documents (from all the repositories)
-    - get document by id
+    - get document by docId
     - add document
     - update (modify) document
     - delete document

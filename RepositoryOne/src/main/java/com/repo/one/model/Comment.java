@@ -1,23 +1,13 @@
-package org.siesta.model;
+package com.repo.one.model;
 
-import javax.persistence.*;
 import java.util.Date;
 
-/**
- * This class
- */
-@Entity
 public class Comment {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
     private String content;
     private Date postedDate;
-
     private String user;
 
-    @ManyToOne
     private Document document;
 
     public Long getId() {

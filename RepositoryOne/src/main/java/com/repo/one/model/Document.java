@@ -1,22 +1,24 @@
 package com.repo.one.model;
 
+import java.util.List;
+
 /**
  * This class
  */
 public class Document {
 
-    private String id;
+    private String docId;
     private String name;
     private String title;
     private String content;
-    private String metadata;
+    private List<Comment> comments;
 
     public Document() {
     }
 
-    public Document(String id, String name, String title, String content) {
+    public Document(String docId, String name, String title, String content) {
         this(name, title, content);
-        this.id = id;
+        this.docId = docId;
     }
 
     public Document(String name, String title, String content) {
@@ -25,13 +27,20 @@ public class Document {
         this.content = content;
     }
 
-
-    public String getId() {
-        return id;
+    public List<Comment> getComments() {
+        return comments;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
+    public String getDocId() {
+        return docId;
+    }
+
+    public void setDocId(String docId) {
+        this.docId = docId;
     }
 
     public String getName() {
@@ -58,14 +67,6 @@ public class Document {
         this.content = content;
     }
 
-    public String getMetadata() {
-        return metadata;
-    }
-
-    public void setMetadata(String metadata) {
-        this.metadata = metadata;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -73,7 +74,7 @@ public class Document {
 
         Document document = (Document) o;
 
-        if (id != null ? !id.equals(document.id) : document.id != null) return false;
+        if (docId != null ? !docId.equals(document.docId) : document.docId != null) return false;
         if (name != null ? !name.equals(document.name) : document.name != null) return false;
         if (title != null ? !title.equals(document.title) : document.title != null) return false;
         return content != null ? content.equals(document.content) : document.content == null;
@@ -82,7 +83,7 @@ public class Document {
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
+        int result = docId != null ? docId.hashCode() : 0;
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (title != null ? title.hashCode() : 0);
         result = 31 * result + (content != null ? content.hashCode() : 0);
@@ -92,11 +93,10 @@ public class Document {
     @Override
     public String toString() {
         return "Document{" +
-                "id='" + id + '\'' +
+                "docId='" + docId + '\'' +
                 ", name='" + name + '\'' +
                 ", title='" + title + '\'' +
                 ", content='" + content + '\'' +
-                ", metadata='" + metadata + '\'' +
                 '}';
     }
 }

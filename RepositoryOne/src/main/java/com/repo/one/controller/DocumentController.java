@@ -3,6 +3,7 @@ package com.repo.one.controller;
 import com.repo.one.model.Document;
 import com.repo.one.service.DocumentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -11,15 +12,22 @@ import java.util.List;
 @RestController()
 public class DocumentController {
 
+
+    private  final String appName;
     @Autowired
     private DocumentService documentService;
 
-/*    @RequestMapping(value = "/rest/documents/", method = RequestMethod.GET)
-    public List<Document> documents() {
-        return documentService.getAll();
-    }*/
+    public DocumentController(@Value("${spring.application.name}") String appName) {
+        this.appName = appName;
+    }
 
-    @RequestMapping(value = "/rest/documents/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/siesta/rest/documents/", method = RequestMethod.GET)
+    public List<Document> documents() {
+//        return Collections.singletonList("--test list val--");
+        return documentService.getAll();
+    }
+
+    @RequestMapping(value = "/siesta/rest/documents/{id}", method = RequestMethod.GET)
     public List<Document> documents(@PathVariable(value = "id", required = false) String documentId) {
         if (documentId == null) {
             return documentService.getAll();
@@ -36,12 +44,12 @@ public class DocumentController {
      * @param document
      * @return
      */
-    @RequestMapping(value = "/rest/documents/{id}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/siesta/rest/documents/{id}", method = RequestMethod.PUT)
     public Document saveConcreateDocument(@PathVariable("id") String documentId, @RequestBody() Document document) {
         return documentService.saveDocument(documentId, document);
     }
 
-    @RequestMapping(value = "/rest/documents", method = RequestMethod.POST, consumes = {"application/json"})
+    @RequestMapping(value = "/siesta/rest/documents", method = RequestMethod.POST, consumes = {"application/json"})
     public Document saveDocument(@RequestBody() Document document) {
         return documentService.setDocument(document);
     }
@@ -56,14 +64,13 @@ public class DocumentController {
     public boolean updateDocument(@RequestBody() Document document) {
         if (document != null) {
             documentService.update(document);
-            return true; // TODO rewrite this method. Handle exception or ...
+            return true;
         }
         return false;
     }
 
-    @RequestMapping(value = "/rest/documents/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/siesta/rest/documents/{id}", method = RequestMethod.DELETE)
     public boolean deleteDocument(@PathVariable("id") String documentId) {
         return documentService.remove(documentId);
     }
-
 }

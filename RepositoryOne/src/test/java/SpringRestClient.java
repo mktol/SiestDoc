@@ -1,6 +1,5 @@
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.repo.one.model.Document;
-import org.apache.tomcat.util.codec.binary.Base64;
 import org.junit.Assert;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
@@ -15,14 +14,14 @@ import java.util.List;
 /*@RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = Application.class)*/
 public class SpringRestClient {
-    public static final String REST_SERVICE_URI = "http://localhost:8080/rest";
+    public static final String REST_SERVICE_URI = "http://localhost:8080/siesta/rest";
 
     private static HttpHeaders getHeaders(){
-        String plainCredentials="admin:admin";
-        String base64Credentials = new String(Base64.encodeBase64(plainCredentials.getBytes()));
+//        String plainCredentials="admin:admin";
+//        String base64Credentials = new String(Base64.encodeBase64(plainCredentials.getBytes()));
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Basic " + base64Credentials);
+//        headers.add("Authorization", "Basic " + base64Credentials);
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         return headers;
     }
@@ -43,7 +42,7 @@ public class SpringRestClient {
     private static void updateDocument() throws JsonProcessingException {
         System.out.println("Lets update document.");
         RestTemplate restTemplate = new RestTemplate();
-        String docId2 = listAllDoc().get(1).getId();
+        String docId2 = listAllDoc().get(1).getDocId();
         Document document = new Document(docId2, "custom NAME", "my title", "TEST CONTENT");
         HttpEntity<Document> request = new HttpEntity<>(document, getHeaders());
 
@@ -85,7 +84,7 @@ public class SpringRestClient {
         System.out.println("Lets delete document");
         RestTemplate restTemplate = new RestTemplate();
         HttpEntity<String> request = new HttpEntity<>(getHeaders());
-        String docId2 = listAllDoc().get(1).getId();
+        String docId2 = listAllDoc().get(1).getDocId();
         boolean resp = restTemplate.exchange(REST_SERVICE_URI+"/documents/"+docId2, HttpMethod.DELETE, request, new ParameterizedTypeReference<Boolean>(){}).getBody();
         Assert.assertTrue(resp);
     }

@@ -1,5 +1,6 @@
 package com.repo.one.security;
 
+/*
 import com.repo.one.security.CustomBasicAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -29,7 +30,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/rest/**").hasRole("ADMIN")
+                .antMatchers("/rest*/
+/**").hasRole("ADMIN")
                 .and().httpBasic().realmName(REALM).authenticationEntryPoint(getBasicAuthEntryPoint());
 //                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);//We don't need sessions to be created.
     }
@@ -39,11 +41,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new CustomBasicAuthenticationEntryPoint();
     }
 
-    /* To allow Pre-flight [OPTIONS] request from browser */
+    */
+/* To allow Pre-flight [OPTIONS] request from browser *//*
+
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers(HttpMethod.OPTIONS, "/**");
+        web.ignoring().antMatchers(HttpMethod.OPTIONS, "*/
+/**");
     }
 
 
-}
+}*/
