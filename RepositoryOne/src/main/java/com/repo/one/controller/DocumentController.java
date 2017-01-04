@@ -23,6 +23,7 @@ public class DocumentController {
 
     @RequestMapping(value = "/siesta/rest/documents/", method = RequestMethod.GET)
     public List<Document> documents() {
+//        return Collections.singletonList("--test list val--");
         return documentService.getAll();
     }
 

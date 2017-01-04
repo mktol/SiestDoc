@@ -1,20 +1,5 @@
 package com.repo.one.controller;
 
-import com.repo.one.model.Document;
-import org.apache.tomcat.util.codec.binary.Base64;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.*;
-import org.springframework.web.client.RestTemplate;
-
-import java.util.Arrays;
-import java.util.List;
-
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 /**
  * This class
  */
@@ -58,7 +43,7 @@ import static org.junit.Assert.assertNotNull;
         HttpEntity<Document> request = new HttpEntity<>( newDocument , getHeaders());
         ResponseEntity<Document> document= restTemplate.exchange(REST_SERVICE_URI+"/documents", HttpMethod.POST, request, new ParameterizedTypeReference<Document>(){});
         assertEquals(200, document.getStatusCodeValue());
-        assertNotNull("Service must create new random id. ", document.getBody().getId());
+        assertNotNull("Service must create new random id. ", document.getBody().getDocId());
     }
 
     @Test
@@ -68,7 +53,7 @@ import static org.junit.Assert.assertNotNull;
         Document savedDocument = restTemplate.exchange(REST_SERVICE_URI+"/documents", HttpMethod.POST, request, new ParameterizedTypeReference<Document>(){}).getBody();
         savedDocument.setTitle("Special Title");
         request = new HttpEntity<>( savedDocument , getHeaders());
-        String savedDcoId = savedDocument.getId();
+        String savedDcoId = savedDocument.getDocId();
         ResponseEntity<Document> resp = restTemplate.exchange(REST_SERVICE_URI+"/documents/"+savedDcoId, HttpMethod.PUT, request, new ParameterizedTypeReference<Document>(){});
         assertEquals(200, resp.getStatusCodeValue());
         assertEquals(savedDocument, resp.getBody());

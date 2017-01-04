@@ -2,7 +2,6 @@ package org.siesta.service;
 
 import org.siesta.error.RepoConnectionException;
 import org.siesta.model.Document;
-import org.siesta.model.DocumentRepoOne;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
@@ -14,9 +13,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * Created by mtol on 13.12.2016.
- */
 public class SiestaConnector {
     private final Logger logger = LoggerFactory.getLogger(SiestaConnector.class);
 
@@ -32,31 +28,29 @@ public class SiestaConnector {
 
     public List<Document> getAll() {
         HttpEntity<String> request = new HttpEntity<>(getHeaders());
-        ResponseEntity<List<DocumentRepoOne>> response = restTemplate.exchange(url + "/documents/", HttpMethod.GET, request, new ParameterizedTypeReference<List<DocumentRepoOne>>() {
+        ResponseEntity<List<Document>> response = restTemplate.exchange(url + "/documents/", HttpMethod.GET, request, new ParameterizedTypeReference<List<Document>>() {
         });
 
-        List<Document> documents = ConverterUtil.convertToDocumetnList(response.getBody());
+        List<Document> documents =response.getBody();
         changeDocumentId(documents);
         return documents;
     }
 
     public Document getDocumentById(String documentId) {
         HttpEntity<Document> request = new HttpEntity<>(getHeaders());
-        List<DocumentRepoOne> response = restTemplate.exchange(url + "/documents/" + documentId, HttpMethod.GET, request, new ParameterizedTypeReference<List<DocumentRepoOne>>() {
+        List<Document> response = restTemplate.exchange(url + "/documents/" + documentId, HttpMethod.GET, request, new ParameterizedTypeReference<List<Document>>() {
         }).getBody();
-
-        List<Document> documents = ConverterUtil.convertToDocumetnList(response);
-        changeDocumentId(documents);
-        return documents.get(0);
+        changeDocumentId(response);
+        return response.get(0);
     }
 
 
     public boolean updateDocument(Document document) {
         try {
-            DocumentRepoOne updatedDoc = ConverterUtil.convertToRepoOneDocument(document);
-            HttpEntity<DocumentRepoOne> request = new HttpEntity<>(updatedDoc, getHeaders());
-            String docId = updatedDoc.getId();
-            ResponseEntity<DocumentRepoOne> resp = restTemplate.exchange(url + "/documents/" + docId, HttpMethod.PUT, request, new ParameterizedTypeReference<DocumentRepoOne>() {
+
+            HttpEntity<Document> request = new HttpEntity<>(document, getHeaders());
+            String docId = document.getDocId();
+            ResponseEntity<Document> resp = restTemplate.exchange(url + "/documents/" + docId, HttpMethod.PUT, request, new ParameterizedTypeReference<Document>() {
             });
             return resp.getStatusCodeValue() == 200;
         } catch (Exception connectionException) {
@@ -65,12 +59,10 @@ public class SiestaConnector {
         return false;
     }
 
-    private void handleResourceAccessException(Exception exception){ //TODO handle All exceptions by List
+    private void handleResourceAccessException(Exception exception) { //TODO handle All exceptions by List
         if (exception.getCause() instanceof ResourceAccessException) { //TODO Вертати чесний результат
             logger.error("Repository " + name + " is not available.");
             throw new RepoConnectionException(name);
-        }else{
-            
         }
         logger.error("Problem with communication with repository " + name, exception);
     }
@@ -78,10 +70,9 @@ public class SiestaConnector {
     public boolean deleteDocument(String docId) {
         try {
             HttpEntity<Document> request = new HttpEntity<>(getHeaders());
-            boolean resp = restTemplate.exchange(url + "/documents/" + docId, HttpMethod.DELETE, request, new ParameterizedTypeReference<Boolean>() {
+            return restTemplate.exchange(url + "/documents/" + docId, HttpMethod.DELETE, request, new ParameterizedTypeReference<Boolean>() {
             }).getBody();
-            return resp;
-        }catch (Exception connectionException){
+        } catch (Exception connectionException) {
             handleResourceAccessException(connectionException);
         }
         return false;
@@ -92,16 +83,16 @@ public class SiestaConnector {
         if (document.getDocId() == null) {
             document.setDocId(UUID.randomUUID().toString());
         }
-        DocumentRepoOne newDoc = ConverterUtil.convertToRepoOneDocument(document);
-        HttpEntity<DocumentRepoOne> request = new HttpEntity<>(newDoc, getHeaders());
-        DocumentRepoOne document1 = null;
+        HttpEntity<Document> request = new HttpEntity<>(document, getHeaders());
+
+        Document res = null;
         try {
-            document1 = restTemplate.exchange(url + "/documents", HttpMethod.POST, request, new ParameterizedTypeReference<DocumentRepoOne>() {
+            res = restTemplate.exchange(url + "/documents", HttpMethod.POST, request, new ParameterizedTypeReference<Document>() {
             }).getBody();
         } catch (Exception e) {
-
+            handleResourceAccessException(e);
         }
-        Document res = ConverterUtil.convertToDocument(document1);
+
         changeDocumentId(res);
         return res;
     }
@@ -141,8 +132,10 @@ public class SiestaConnector {
     }
 
     private void changeDocumentId(Document document) {
-        String docId = document.getDocId();
-        String newDocID = ConverterUtil.createId(docId, name);
-        document.setDocId(newDocID);
+        if(document!=null) {
+            String docId = document.getDocId();
+            String newDocID = DocumentUtil.createId(docId, name);
+            document.setDocId(newDocID);
+        }
     }
 }

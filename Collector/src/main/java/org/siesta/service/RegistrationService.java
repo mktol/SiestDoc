@@ -27,7 +27,7 @@ public class RegistrationService {
     }
 
     private boolean validateName(String name){
-        return handleDocumentService.getConnectors().stream().noneMatch(connector -> connector.getName().equals(name));
+        return !handleDocumentService.getConnectors().containsKey(name);
     }
 
 }

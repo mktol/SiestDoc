@@ -40,22 +40,22 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public Document setDocument(Document document) {
-        if(document.getId()==null){
-            document.setId(UUID.randomUUID().toString());
-            logger.debug("document id "+document.getId()+" is generated. ");
+        if(document.getDocId()==null){
+            document.setDocId(UUID.randomUUID().toString());
+            logger.debug("document id "+document.getDocId()+" is generated. ");
         }
         return documentRepo.create(document);
     }
 
     @Override
     public Document update(Document document) {
-        documentRepo.saveUpdateByDocumentId(document.getId(), document);
+        documentRepo.saveUpdateByDocumentId(document.getDocId(), document);
         return document;
     }
 
     @Override
     public boolean remove(Document document) {
-        return documentRepo.remove(document.getId());
+        return documentRepo.remove(document.getDocId());
     }
 
     @Override
@@ -67,7 +67,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public Document saveDocument(String documentId, Document document) {
-        document.setId(documentId);
+        document.setDocId(documentId);
         documentRepo.saveUpdateByDocumentId(documentId, document);
         return document;
     }

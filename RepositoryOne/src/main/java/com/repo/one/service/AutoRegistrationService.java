@@ -11,9 +11,9 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.servlet.ServletContext;
 import java.util.Arrays;
+import java.util.UUID;
 
 /**
  * Registration service. Make registration into connector
@@ -22,8 +22,8 @@ import java.util.Arrays;
 public class AutoRegistrationService {
     @Autowired
     ServletContext servletContext;
-    @Value("${repo.name}")
-    private String repoName;
+/*    @Value("${repo.name}")
+    private String repoName;*/
     @Value("${collector.reg.url}")
     private String regUrl;
     @Value("${collector.unreg.url}")
@@ -48,7 +48,7 @@ public class AutoRegistrationService {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         HttpEntity<String> request = new HttpEntity<>(headers);
-
+        String repoName = UUID.randomUUID().toString().substring(10);
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(regUrl)
                 .queryParam("connectUrl", documentAccessUrl)
                 .queryParam("name", repoName);
@@ -61,7 +61,7 @@ public class AutoRegistrationService {
         return response.getBody();
     }
 
-    @PreDestroy
+   /* @PreDestroy
     public boolean cancelRegistration(){
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
@@ -74,7 +74,7 @@ public class AutoRegistrationService {
                 request,
                 Boolean.class);
         return response.getBody();
-    }
+    }*/
 
 
 }

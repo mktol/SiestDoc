@@ -51,21 +51,22 @@ public class DocumentConrollerTest {
     @Test
     public void testAddDocument(){ // test if crete id
         Document newDocument = new Document();
-        newDocument.setContent("new content.");
-        newDocument.setTitle("new title");
-        newDocument.setName("new name");
+        newDocument.setContent("new content.2");
+        newDocument.setTitle("new title_2.0");
+        newDocument.setName("new name_2.0");
 
         HttpEntity<Document> request = new HttpEntity<>( newDocument , getHeaders());
-        ResponseEntity<Document> document= restTemplate.exchange(REST_SERVICE_URI+"/documents", HttpMethod.POST, request, new ParameterizedTypeReference<Document>(){});
+        ResponseEntity<Document> document= restTemplate.exchange(REST_SERVICE_URI+"/documents/", HttpMethod.POST, request, new ParameterizedTypeReference<Document>(){});
         assertEquals(201, document.getStatusCodeValue());
         assertNotNull("Service must create new random id. ", document.getBody().getDocId());
+        System.out.println(document.getBody().getDocId());
     }
 
     @Test
     public void testUpdateDocument(){
 
         HttpEntity<Document> request = new HttpEntity<>( newDocument , getHeaders());
-        Document savedDocument = restTemplate.exchange(REST_SERVICE_URI+"/documents", HttpMethod.POST, request, new ParameterizedTypeReference<Document>(){}).getBody();
+        Document savedDocument = restTemplate.exchange(REST_SERVICE_URI+"/documents/", HttpMethod.POST, request, new ParameterizedTypeReference<Document>(){}).getBody();
         savedDocument.setTitle("Special Title");
         request = new HttpEntity<>( savedDocument, getHeaders());
 

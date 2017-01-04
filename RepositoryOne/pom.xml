@@ -92,13 +92,13 @@
 
    <!-- <repositories>
         <repository>
-            <id>spring-releases</id>
+            <docId>spring-releases</docId>
             <url>https://repo.spring.io/libs-release</url>
         </repository>
     </repositories>
     <pluginRepositories>
         <pluginRepository>
-            <id>spring-releases</id>
+            <docId>spring-releases</docId>
             <url>https://repo.spring.io/libs-release</url>
         </pluginRepository>
     </pluginRepositories>-->

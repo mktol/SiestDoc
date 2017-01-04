@@ -1,15 +1,20 @@
 package org.siesta.service;
 
+import org.siesta.aspect.RemoveFromCache;
 import org.siesta.error.DocumentNotFindException;
 import org.siesta.model.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
@@ -24,62 +29,83 @@ public class HandleDocumentService {
     ExecutorService executor = Executors.newCachedThreadPool();
     @Autowired
     private CachedDocumentService cachedDocumentService;
-    private List<SiestaConnector> connectors = new ArrayList<>();
+    private Map<String, SiestaConnector> connectorMap = new HashMap<>();
 
-    public List<SiestaConnector> getConnectors() {
-        return connectors;
+
+    public Map<String, SiestaConnector> getConnectors() {
+        return connectorMap;
     }
 
     public boolean addConnector(SiestaConnector connector) {
-        return connectors.add(connector);
+        connectorMap.put(connector.getName(), connector);
+        return connectorMap.containsKey(connector.getName());
     }
 
     public List<Document> getAll() {
 
-        List<Document> documents = cachedDocumentService.getAll();
-        if (!documents.isEmpty()) {
-            return documents;
-        }
-        List<FutureTask<List<Document>>> tasks = new ArrayList<>();
-        for (SiestaConnector connector : connectors) {
-            FutureTask<List<Document>> task = new FutureTask<>(connector::getAll);
-            tasks.add(task);
-            executor.submit(task);
-        }
+        List<FutureTask<List<Document>>> tasks = getFutureTasks();
+
         List<Document> resultList = new ArrayList<>();
+        List<Exception> exceptions = new ArrayList<>();
         for (FutureTask<List<Document>> task : tasks) {
             try {
                 List<Document> currentDocs = task.get();
                 resultList.addAll(currentDocs);
-            } catch (Exception e) {//
-                logger.error(e.getCause().getMessage());
+            } catch (InterruptedException e) {
+                logger.error("Problem with execution task ", e);
+                exceptions.add(e);
+            } catch (ExecutionException e) {
+                logger.error("Problem with connection or returned result from repository", e);
+                exceptions.add(e);
             }
         }
-        cachedDocumentService.saveDocument(resultList);
-        return cachedDocumentService.getAll();
+        handleExceptions(exceptions);
+        return resultList;
+    }
+
+    private void handleExceptions(List<Exception> exceptionList) {
+        for (Exception exception : exceptionList) {
+            if(exception.getCause() instanceof HttpMessageNotReadableException){
+                logger.error("problem with mapping returned result to object, "+exception.getCause().getMessage());
+            }
+        }
     }
 
 
-    public Document getDocumentById(String docId) {
-        Document document = cachedDocumentService.getByDocumentId(docId);
-        if (document != null) {
-            return document;
+    private List<FutureTask<List<Document>>> getFutureTasks() {
+
+        List<FutureTask<List<Document>>> tasks = new ArrayList<>();
+        try {
+            for (SiestaConnector connector : connectorMap.values()) {
+                FutureTask<List<Document>> task = new FutureTask<>(connector::getAll);
+                tasks.add(task);
+                executor.submit(task);
+            }
+
+        }catch (Exception excep){
+            logger.error("");
         }
-        String repoName = ConverterUtil.getNameFromId(docId);
+        return tasks;
+    }
+
+
+    public Document getDocumentById(String docId) { // Check in cash if exist Document with this id and return it;
+
+        String repoName = DocumentUtil.getNameFromId(docId);
         SiestaConnector siestaConnector = getConnectorByName(repoName);
-        String documentId = ConverterUtil.getDocumentId(docId);
+        String documentId = DocumentUtil.getDocumentId(docId);
         if (documentId.isEmpty()) {
             throw new DocumentNotFindException();
         }
         if (siestaConnector != null) {
             return siestaConnector.getDocumentById(documentId);
         }
-        return getDocumentByAllRepo(documentId);
+        return getDocumentByAllRepo(documentId); // Cache it before returning
     }
 
     private Document getDocumentByAllRepo(final String documentId) {
         List<FutureTask<Document>> tasks = new ArrayList<>();
-        for (SiestaConnector connector : connectors) {
+        for (SiestaConnector connector : connectorMap.values()) {
             FutureTask<Document> task = new FutureTask<>(() -> connector.getDocumentById(documentId));
             tasks.add(task);
             executor.submit(task);
@@ -104,13 +130,13 @@ public class HandleDocumentService {
     }
 
     private SiestaConnector getConnectorByName(String repoName) {
-        return connectors.stream().filter(siestaConnector -> siestaConnector.getName().equals(repoName)).findFirst().orElse(null); //connectors save into Map
+        return connectorMap.get(repoName);
     }
 
+    @RemoveFromCache
     public boolean updateDocument(Document document) {
-        cachedDocumentService.deleteDocument(document.getDocId());
         String docId = document.getDocId();
-        String repoName = ConverterUtil.getNameFromId(docId);
+        String repoName = DocumentUtil.getNameFromId(docId);
         SiestaConnector siestaConnector = getConnectorByName(repoName);
         if (siestaConnector == null) { // move this code to get connector by name
             throw new DocumentNotFindException(docId);
@@ -118,10 +144,11 @@ public class HandleDocumentService {
         return siestaConnector.updateDocument(document);
     }
 
-    public boolean deleteDocument(String docId) {
-        cachedDocumentService.deleteDocument(docId);
-        String repoName = ConverterUtil.getNameFromId(docId);
-        String cleanDocId = ConverterUtil.getDocumentId(docId);
+    @RemoveFromCache
+    public boolean deleteDocument(String docId) { // remove from cache if exist
+//        cachedDocumentService.deleteDocument(docId);
+        String repoName = DocumentUtil.getNameFromId(docId);
+        String cleanDocId = DocumentUtil.getDocumentId(docId);
         SiestaConnector siestaConnector = getConnectorByName(repoName);
         if (siestaConnector == null) {
             throw new DocumentNotFindException(docId);
@@ -131,16 +158,17 @@ public class HandleDocumentService {
 
     public Document addDocument(Document document) {
         if (document.getDocId() == null || document.getDocId().length() == 36) {
-            SiestaConnector siestaConnector = connectors.get(0);
-            Document res = siestaConnector.addDocument(document);
-            return res;
+            if(connectorMap.size()>0) {
+                SiestaConnector siestaConnector = (SiestaConnector) connectorMap.values().toArray()[0];
+                return siestaConnector.addDocument(document);
+            }
         }
-        String repoName = ConverterUtil.getNameFromId(document.getDocId());
+        String repoName = DocumentUtil.getNameFromId(document.getDocId());
         SiestaConnector siestaConnector = getConnectorByName(repoName);
         if (siestaConnector == null) {
             throw new DocumentNotFindException(document.getDocId());
         }
-        return siestaConnector.addDocument(document);
+        return siestaConnector.addDocument(document); // put in cash
     }
 
     /**
@@ -149,15 +177,16 @@ public class HandleDocumentService {
     @Scheduled(fixedRate = 30_000)
     public void connectorsChecker() {
         List<SiestaConnector> unWorkedConnectors = new ArrayList<>();
-        for (SiestaConnector connector : connectors) {
+        for (SiestaConnector connector : connectorMap.values()) {
             if (!connector.isConnectionALive()) {
                 unWorkedConnectors.add(connector);
                 logger.warn(" Connector " + connector.getName() + " is not accessible. Connector is removed. ");
             }
         }
         if (!unWorkedConnectors.isEmpty()) {
-            connectors.removeAll(unWorkedConnectors);
+            for (SiestaConnector connector : unWorkedConnectors) {
+                connectorMap.remove(connector.getName());
+            }
         }
-
     }
 }
